@@ -46,6 +46,13 @@ export default function Footer() {
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleLogoClick = () => {
+    const code = window.prompt("Ingresa el código de acceso:");
+    if (code === "1304") {
+      window.open("https://jerezcons-erp-mini.vercel.app/", "_blank");
+    }
+  };
+
   return (
     <footer style={{ backgroundColor: "#0F2244" }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
@@ -53,7 +60,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <button
-              onClick={() => handleNavClick("#inicio")}
+              onClick={handleLogoClick}
               className="font-bold text-3xl mb-4 focus:outline-none"
               style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
             >
