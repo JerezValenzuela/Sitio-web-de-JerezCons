@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   keywords: "ferretería, JerezCons, ferretería en Quito, ferretería San Antonio de Pichincha, ferretería San Antonio, materiales de construcción Quito, herramientas Quito, ferretería Ecuador, Jerezcons Quito, ferretería Pucará, ferretería Reino de Quito, construcción Quito",
   authors: [{ name: "JerezCons" }],
   verification: {
-    google: "google60e23abd776a5176.html",
+    google: "wZEQxGtDOfoiajw45YUcyw2TZgTOjxP4byvoa4pzblw",
   },
   robots: "index, follow",
   icons: {
