@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   description: "JerezCons: ferretería en Quito con más de 30 años de experiencia. Venta y distribución de materiales de construcción, herramientas y acabados. Sucursales en San Antonio de Pichincha y Reino de Quito. Llámanos: 098-406-7799.",
   keywords: "ferretería, JerezCons, ferretería en Quito, ferretería San Antonio de Pichincha, ferretería San Antonio, materiales de construcción Quito, herramientas Quito, ferretería Ecuador, Jerezcons Quito, ferretería Pucará, ferretería Reino de Quito, construcción Quito",
   authors: [{ name: "JerezCons" }],
+  verification: {
+    google: "google60e23abd776a5176.html",
+  },
   robots: "index, follow",
   icons: {
     icon: "/favicon.png",
