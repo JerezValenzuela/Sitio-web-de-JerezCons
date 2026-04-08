@@ -22,7 +22,7 @@ export default function Hero() {
         fill
         priority
         quality={80}
-        className="object-cover object-right"
+        className="object-cover object-right sm:object-center"
         sizes="100vw"
       />
 
