@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 export default function Hero() {
@@ -14,10 +15,15 @@ export default function Hero() {
       className="relative w-full flex items-center justify-center overflow-hidden"
       style={{ minHeight: "100vh" }}
     >
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/hero.jpeg')" }}
+      {/* Background Image — priority para precargar */}
+      <Image
+        src="/hero.jpeg"
+        alt="Frente JerezCons"
+        fill
+        priority
+        quality={80}
+        className="object-cover object-center"
+        sizes="100vw"
       />
 
       {/* Navy Overlay */}
