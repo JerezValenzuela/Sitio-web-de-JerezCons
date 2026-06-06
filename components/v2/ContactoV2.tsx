@@ -96,7 +96,7 @@ export default function ContactoV2() {
             initial={{ opacity: 0, x: -40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            className="text-center lg:text-left"
+            className="text-center lg:text-left min-w-0"
           >
             <span
               className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 text-xs font-semibold uppercase tracking-widest"
@@ -159,7 +159,7 @@ export default function ContactoV2() {
             initial={{ opacity: 0, y: 40 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="relative rounded-3xl bg-white p-7 sm:p-9 shadow-2xl"
+            className="relative rounded-3xl bg-white p-7 sm:p-9 shadow-2xl min-w-0"
           >
             {/* Badge respuesta rápida */}
             <span
@@ -196,7 +196,7 @@ export default function ContactoV2() {
                     <p className="text-xs uppercase tracking-wider text-gray-400" style={{ fontFamily: "'Inter', sans-serif" }}>
                       {c.label}
                     </p>
-                    <p className="text-sm sm:text-base font-semibold group-hover:underline truncate" style={{ color: NAVY, fontFamily: "'Inter', sans-serif" }}>
+                    <p className="text-sm sm:text-base font-semibold group-hover:underline break-words" style={{ color: NAVY, fontFamily: "'Inter', sans-serif" }}>
                       {c.value}
                     </p>
                   </div>
