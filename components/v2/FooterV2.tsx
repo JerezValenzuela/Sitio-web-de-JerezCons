@@ -96,9 +96,9 @@ export default function FooterV2() {
   const scrollTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   return (
-    <footer className="relative overflow-hidden" style={{ backgroundColor: NAVY_DEEP }}>
+    <footer className="relative overflow-hidden" style={{ background: `linear-gradient(180deg, #16315C 0%, ${NAVY_DEEP} 55%)` }}>
       {/* Acento superior naranja full-width */}
-      <div className="h-1 w-full" style={{ background: `linear-gradient(90deg, ${ORANGE}, ${NAVY_DEEP} 70%)` }} />
+      <div className="h-1 w-full" style={{ background: `linear-gradient(90deg, ${ORANGE}, rgba(232,96,10,0.15) 45%, transparent 75%)` }} />
 
       {/* Patrón sutil + glows */}
       <div
@@ -123,8 +123,23 @@ export default function FooterV2() {
         >
           {/* glow interno */}
           <div className="pointer-events-none absolute -right-10 -top-16 h-48 w-48 rounded-full opacity-25 blur-3xl" style={{ backgroundColor: ORANGE }} />
+          {/* textura blueprint interna muy tenue */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.05]"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(255,255,255,0.7) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.7) 1px, transparent 1px)",
+              backgroundSize: "32px 32px",
+              maskImage: "radial-gradient(ellipse 70% 100% at 30% 50%, #000 20%, transparent 75%)",
+              WebkitMaskImage: "radial-gradient(ellipse 70% 100% at 30% 50%, #000 20%, transparent 75%)",
+            }}
+          />
           <div className="relative text-center md:text-left">
-            <h3 className="text-white text-2xl sm:text-4xl font-bold" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+            <span className="inline-flex items-center gap-2 mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: ORANGE, fontFamily: "'Inter', sans-serif" }}>
+              <span className="h-px w-6" style={{ backgroundColor: ORANGE }} />
+              Presupuesto sin compromiso
+            </span>
+            <h3 className="text-white text-2xl sm:text-4xl font-bold leading-tight" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
               ¿Tienes un proyecto en mente? <span style={{ color: ORANGE }}>Cotiza hoy mismo.</span>
             </h3>
             <p className="text-white/70 text-sm sm:text-base mt-2" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -135,8 +150,8 @@ export default function FooterV2() {
             href="https://wa.me/593984067799"
             target="_blank"
             rel="noopener noreferrer"
-            className="relative inline-flex items-center gap-2 px-7 py-4 rounded-xl text-white font-semibold transition-transform hover:scale-105 active:scale-95 whitespace-nowrap shadow-lg flex-shrink-0"
-            style={{ backgroundColor: ORANGE, fontFamily: "'Inter', sans-serif" }}
+            className="relative inline-flex items-center gap-2 px-7 py-4 rounded-xl text-white font-semibold transition-transform hover:scale-105 active:scale-95 whitespace-nowrap flex-shrink-0"
+            style={{ backgroundColor: ORANGE, fontFamily: "'Inter', sans-serif", boxShadow: "0 14px 34px rgba(232,96,10,0.40)" }}
           >
             {socialLinks[2].icon}
             Cotizar por WhatsApp

@@ -4,17 +4,17 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
 /**
- * ContactoV2 — 2.0. Layout en dos columnas:
- *  - Izquierda: mensaje principal + CTAs + señales de confianza.
- *  - Derecha: tarjeta BLANCA de contacto (contraste premium sobre el navy),
- *    con los medios de contacto en filas claras y un CTA de WhatsApp.
+ * ContactoV2 — 3.0. Fondo CLARO (regla "blanco base siempre").
+ * Layout en dos columnas:
+ *  - Izquierda: mensaje principal en navy + CTAs + chips de confianza.
+ *  - Derecha: tarjeta blanca premium con los medios de contacto.
  *
- * Fondo navy con patrón sutil + glows. Mantiene datos reales.
+ * Sin fondo azul: textura "blueprint" navy muy tenue + glow naranja cálido.
+ * El navy y el naranja quedan SOLO como acentos. Datos reales intactos.
  * Cero dependencias nuevas.
  */
 
 const NAVY = "#1A3A6B";
-const NAVY_DEEP = "#0F2244";
 const ORANGE = "#E8600A";
 
 const contactos = [
@@ -67,26 +67,25 @@ export default function ContactoV2() {
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="contacto" className="relative py-24 lg:py-32 overflow-hidden" style={{ backgroundColor: NAVY }}>
-      {/* Imagen de obra muy sutil de fondo */}
+    <section
+      id="contacto"
+      className="relative py-24 lg:py-32 overflow-hidden"
+      style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #F4F6FA 60%, #EEF1F6 100%)" }}
+    >
+      {/* Textura blueprint navy muy tenue (guiño a construcción), con desvanecido radial */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-[0.1]"
-        style={{ backgroundImage: "url(https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&auto=format&fit=crop)" }}
-      />
-      <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, ${NAVY} 0%, rgba(26,58,107,0.9) 50%, ${NAVY_DEEP} 100%)` }} />
-      {/* Patrón de cuadrícula */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.06]"
+        className="pointer-events-none absolute inset-0 opacity-[0.05]"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)",
+            "linear-gradient(rgba(26,58,107,1) 1px, transparent 1px), linear-gradient(90deg, rgba(26,58,107,1) 1px, transparent 1px)",
           backgroundSize: "48px 48px",
-          maskImage: "radial-gradient(ellipse 80% 70% at 50% 40%, #000 30%, transparent 78%)",
-          WebkitMaskImage: "radial-gradient(ellipse 80% 70% at 50% 40%, #000 30%, transparent 78%)",
+          maskImage: "radial-gradient(ellipse 85% 75% at 50% 35%, #000 25%, transparent 80%)",
+          WebkitMaskImage: "radial-gradient(ellipse 85% 75% at 50% 35%, #000 25%, transparent 80%)",
         }}
       />
-      <div className="pointer-events-none absolute -top-20 -left-10 h-80 w-80 rounded-full opacity-20 blur-3xl" style={{ backgroundColor: ORANGE }} />
-      <div className="pointer-events-none absolute -bottom-24 -right-10 h-80 w-80 rounded-full opacity-[0.14] blur-3xl" style={{ backgroundColor: ORANGE }} />
+      {/* Glows cálidos naranja muy suaves */}
+      <div className="pointer-events-none absolute -top-24 -left-16 h-80 w-80 rounded-full opacity-[0.10] blur-3xl" style={{ backgroundColor: ORANGE }} />
+      <div className="pointer-events-none absolute top-1/2 -right-24 h-96 w-96 rounded-full opacity-[0.07] blur-3xl" style={{ backgroundColor: NAVY }} />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
@@ -100,7 +99,7 @@ export default function ContactoV2() {
           >
             <span
               className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 text-xs font-semibold uppercase tracking-widest"
-              style={{ backgroundColor: "rgba(232,96,10,0.15)", color: ORANGE, fontFamily: "'Inter', sans-serif" }}
+              style={{ backgroundColor: "rgba(232,96,10,0.10)", color: ORANGE, fontFamily: "'Inter', sans-serif" }}
             >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full rounded-full opacity-70 animate-ping" style={{ backgroundColor: ORANGE }} />
@@ -109,11 +108,11 @@ export default function ContactoV2() {
               Hablemos · Atención inmediata
             </span>
 
-            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[0.95]" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-[0.95]" style={{ color: NAVY, fontFamily: "'Barlow Condensed', sans-serif" }}>
               ¿Listo para tu<br />
               <span style={{ color: ORANGE }}>próximo proyecto?</span>
             </h2>
-            <p className="text-white/75 text-lg max-w-xl mx-auto lg:mx-0 mb-9" style={{ fontFamily: "'Inter', sans-serif" }}>
+            <p className="text-gray-600 text-lg max-w-xl mx-auto lg:mx-0 mb-9" style={{ fontFamily: "'Inter', sans-serif" }}>
               Cuéntanos qué necesitas y te asesoramos al instante. Materiales, herramientas y precios — todo en un solo lugar.
             </p>
 
@@ -122,20 +121,20 @@ export default function ContactoV2() {
                 href="https://wa.me/593984067799"
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.05, boxShadow: "0 16px 50px rgba(232,96,10,0.5)" }}
+                whileHover={{ scale: 1.05, boxShadow: "0 18px 50px rgba(232,96,10,0.35)" }}
                 whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl text-white font-bold shadow-2xl"
-                style={{ backgroundColor: ORANGE, fontFamily: "'Barlow Condensed', sans-serif", fontSize: "1.25rem" }}
+                className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl text-white font-bold shadow-xl"
+                style={{ backgroundColor: ORANGE, fontFamily: "'Barlow Condensed', sans-serif", fontSize: "1.25rem", boxShadow: "0 12px 30px rgba(232,96,10,0.28)" }}
               >
                 <WhatsAppIcon />
                 Escríbenos por WhatsApp
               </motion.a>
               <motion.a
                 href="tel:+593984067799"
-                whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.12)" }}
+                whileHover={{ scale: 1.05, backgroundColor: "rgba(26,58,107,0.06)" }}
                 whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl text-white font-bold border-2 border-white/30"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "1.25rem" }}
+                className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-bold border-2"
+                style={{ color: NAVY, borderColor: "rgba(26,58,107,0.25)", fontFamily: "'Barlow Condensed', sans-serif", fontSize: "1.25rem" }}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z" />
@@ -144,11 +143,18 @@ export default function ContactoV2() {
               </motion.a>
             </div>
 
-            {/* Señales de confianza */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-white/65 text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>
+            {/* Señales de confianza como chips */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
               {confianza.map((c) => (
-                <span key={c} className="inline-flex items-center gap-2">
-                  <span style={{ color: ORANGE }}>✓</span> {c}
+                <span
+                  key={c}
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-sm font-medium shadow-sm"
+                  style={{ color: NAVY, border: "1px solid rgba(26,58,107,0.10)", fontFamily: "'Inter', sans-serif" }}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                  {c}
                 </span>
               ))}
             </div>
@@ -159,8 +165,12 @@ export default function ContactoV2() {
             initial={{ opacity: 0, y: 40 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="relative rounded-3xl bg-white p-7 sm:p-9 shadow-2xl min-w-0"
+            className="relative rounded-3xl bg-white p-7 sm:p-9 ring-1 ring-black/5"
+            style={{ boxShadow: "0 30px 70px -25px rgba(26,58,107,0.35), 0 8px 24px -12px rgba(26,58,107,0.18)" }}
           >
+            {/* Acento naranja superior */}
+            <div className="absolute inset-x-8 top-0 h-1 rounded-b-full" style={{ background: `linear-gradient(90deg, transparent, ${ORANGE}, transparent)` }} />
+
             {/* Badge respuesta rápida */}
             <span
               className="absolute -top-3 right-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold shadow-md"
@@ -177,14 +187,14 @@ export default function ContactoV2() {
               Elige el medio que prefieras. Estamos para ayudarte.
             </p>
 
-            <div className="divide-y divide-gray-100">
+            <div className="space-y-1">
               {contactos.map((c) => (
                 <a
                   key={c.label}
                   href={c.href}
                   target={c.href.startsWith("http") ? "_blank" : undefined}
                   rel={c.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                  className="group flex items-center gap-4 py-4 transition-colors"
+                  className="group flex items-center gap-4 rounded-2xl px-3 py-3.5 -mx-1 transition-colors hover:bg-[rgba(232,96,10,0.05)]"
                 >
                   <span
                     className="flex h-12 w-12 items-center justify-center rounded-xl flex-shrink-0 transition-all group-hover:scale-105"
@@ -196,7 +206,7 @@ export default function ContactoV2() {
                     <p className="text-xs uppercase tracking-wider text-gray-400" style={{ fontFamily: "'Inter', sans-serif" }}>
                       {c.label}
                     </p>
-                    <p className="text-sm sm:text-base font-semibold group-hover:underline break-words" style={{ color: NAVY, fontFamily: "'Inter', sans-serif" }}>
+                    <p className="text-sm sm:text-base font-semibold break-words" style={{ color: NAVY, fontFamily: "'Inter', sans-serif" }}>
                       {c.value}
                     </p>
                   </div>
