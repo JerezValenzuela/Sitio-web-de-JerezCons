@@ -4,15 +4,18 @@ import { motion, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 /**
- * SucursalesV2 — AMBAS sucursales visibles a la vez (sin tabs ni clicks).
+ * SucursalesV2 — 3.0. AMBAS sucursales visibles a la vez (sin tabs ni clicks).
  *
  * Por qué: un maestro/cliente común no descubre que hay que presionar.
  * Por eso las DOS salen siempre, cada una con su info + mapa.
  *
- * Diferenciación clara y premium:
- *  - Matriz: tarjeta destacada (navy lleno, badge "★ Casa Matriz",
- *    borde de acento naranja).
- *  - Norte: tarjeta blanca limpia, claramente "sucursal".
+ * Cambio 3.0 (consistencia premium sobre fondo claro):
+ *  - Las DOS tarjetas son blancas e idénticas en estructura (antes una era
+ *    navy lleno y la otra blanca → se veía desbalanceado).
+ *  - La Matriz se DESTACA solo con acentos naranja: anillo, barra superior
+ *    y badge "★ Casa Matriz". Sin bloque azul.
+ *  - Foto real de tienda para la sucursal Norte (antes una foto de stock
+ *    que no pegaba con una ferretería).
  *
  * Toque premium: indicador "Abierto ahora / Cerrado" calculado en vivo
  * según el horario real de cada local. Se calcula solo en cliente para
@@ -22,7 +25,6 @@ import { useEffect, useRef, useState } from "react";
  */
 
 const NAVY = "#1A3A6B";
-const NAVY_DEEP = "#0F2244";
 const ORANGE = "#E8600A";
 
 /** Tramo horario en minutos desde medianoche; null = cerrado ese día. */
@@ -87,7 +89,7 @@ const sucursales: Sucursal[] = [
     mapsEmbed:
       "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3988.5!2d-78.439818!3d0.0128333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2sec!4v1700000000002",
     mapsLink: "https://maps.google.com/?q=Reino+de+Quito",
-    foto: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1000&auto=format&fit=crop",
+    foto: "/galeria-interior.jpg",
   },
 ];
 
@@ -166,18 +168,14 @@ function Arrow() {
 }
 
 /** Pastilla de estado abierto/cerrado con punto. */
-function EstadoPill({ estado, matriz }: { estado: Estado | null; matriz: boolean }) {
+function EstadoPill({ estado }: { estado: Estado | null }) {
   if (!estado) return null;
   const verde = "#16A34A";
   const color = estado.abierto ? verde : ORANGE;
   return (
     <div
       className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold shadow-md backdrop-blur-sm"
-      style={{
-        backgroundColor: matriz ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.95)",
-        color: NAVY,
-        fontFamily: "'Inter', sans-serif",
-      }}
+      style={{ backgroundColor: "rgba(255,255,255,0.95)", color: NAVY, fontFamily: "'Inter', sans-serif" }}
     >
       <span className="relative flex h-2 w-2">
         {estado.abierto && (
@@ -194,22 +192,17 @@ function EstadoPill({ estado, matriz }: { estado: Estado | null; matriz: boolean
 function InfoRow({
   icon,
   children,
-  matriz,
   divider = true,
 }: {
   icon: React.ReactNode;
   children: React.ReactNode;
-  matriz: boolean;
   divider?: boolean;
 }) {
   return (
-    <div className={`flex items-start gap-3.5 py-3.5 ${divider ? "border-b" : ""}`} style={{ borderColor: matriz ? "rgba(255,255,255,0.12)" : "#EFEFEF" }}>
+    <div className={`flex items-start gap-3.5 py-3.5 ${divider ? "border-b" : ""}`} style={{ borderColor: "#EFEFEF" }}>
       <span
         className="flex h-9 w-9 items-center justify-center rounded-lg flex-shrink-0"
-        style={{
-          backgroundColor: matriz ? "rgba(232,96,10,0.18)" : "rgba(232,96,10,0.10)",
-          color: ORANGE,
-        }}
+        style={{ backgroundColor: "rgba(232,96,10,0.10)", color: ORANGE }}
       >
         {icon}
       </span>
@@ -218,7 +211,7 @@ function InfoRow({
   );
 }
 
-/** Tarjeta de una sucursal: header + info + mapa + CTA. */
+/** Tarjeta de una sucursal: header + info + mapa + CTA. Ambas blancas. */
 function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
@@ -233,8 +226,6 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
     return () => clearInterval(id);
   }, [s.horario]);
 
-  const textSub = matriz ? "rgba(255,255,255,0.78)" : "#4B5563";
-
   return (
     <motion.div
       ref={ref}
@@ -242,32 +233,31 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -8 }}
-      className={`group relative flex flex-col h-full rounded-3xl overflow-hidden transition-shadow duration-300 ${
-        matriz ? "shadow-2xl ring-2 ring-offset-2" : "shadow-lg hover:shadow-2xl border border-gray-100"
+      className={`group relative flex flex-col h-full rounded-3xl overflow-hidden bg-white transition-shadow duration-300 ${
+        matriz ? "ring-2 shadow-2xl" : "border border-gray-100 shadow-lg hover:shadow-2xl"
       }`}
-      style={{
-        backgroundColor: matriz ? NAVY : "#ffffff",
-        ["--tw-ring-color" as string]: ORANGE,
-      }}
+      style={{ ["--tw-ring-color" as string]: ORANGE }}
     >
+      {/* Acento naranja superior: marca la sucursal principal */}
+      {matriz && (
+        <div className="absolute top-0 inset-x-0 h-1.5 z-20" style={{ background: `linear-gradient(90deg, ${ORANGE}, rgba(232,96,10,0.35))` }} />
+      )}
+
       {/* Banner con foto */}
       <div className="relative h-48 sm:h-56 w-full overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center transition-transform duration-[1.2s] group-hover:scale-110"
           style={{ backgroundImage: `url(${s.foto})` }}
         />
+        {/* Degradado hacia blanco para fundir la foto con la tarjeta */}
         <div
           className="absolute inset-0"
-          style={{
-            background: matriz
-              ? `linear-gradient(180deg, rgba(15,34,68,0.30) 0%, rgba(15,34,68,0.55) 55%, ${NAVY} 100%)`
-              : `linear-gradient(180deg, rgba(15,34,68,0.25) 0%, rgba(15,34,68,0.55) 60%, #ffffff 100%)`,
-          }}
+          style={{ background: "linear-gradient(180deg, rgba(15,34,68,0.15) 0%, rgba(15,34,68,0.55) 60%, #ffffff 100%)" }}
         />
 
         {/* Estado en vivo (arriba izq) */}
         <div className="absolute top-4 left-4 z-10">
-          <EstadoPill estado={estado} matriz={matriz} />
+          <EstadoPill estado={estado} />
         </div>
 
         {/* Cinta premium (arriba der) */}
@@ -299,19 +289,19 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
         </p>
 
         <div className="mt-2">
-          <InfoRow icon={<Pin />} matriz={matriz}>
-            <p className="text-sm leading-relaxed" style={{ color: textSub, fontFamily: "'Inter', sans-serif" }}>
+          <InfoRow icon={<Pin />}>
+            <p className="text-sm leading-relaxed text-gray-600" style={{ fontFamily: "'Inter', sans-serif" }}>
               {s.direccion}
             </p>
           </InfoRow>
 
-          <InfoRow icon={<Clock />} matriz={matriz}>
+          <InfoRow icon={<Clock />}>
             <div style={{ fontFamily: "'Inter', sans-serif" }}>
               {s.horarioLineas.map((linea, i) => (
                 <p
                   key={i}
                   className="text-sm leading-relaxed"
-                  style={{ color: linea.includes("Cerrado") ? ORANGE : textSub }}
+                  style={{ color: linea.includes("Cerrado") ? ORANGE : "#4B5563" }}
                 >
                   {linea}
                 </p>
@@ -319,11 +309,11 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
             </div>
           </InfoRow>
 
-          <InfoRow icon={<Phone />} matriz={matriz} divider={false}>
+          <InfoRow icon={<Phone />} divider={false}>
             <a
               href={`tel:${s.telefono}`}
               className="text-sm font-semibold hover:underline"
-              style={{ color: matriz ? "#fff" : NAVY, fontFamily: "'Inter', sans-serif" }}
+              style={{ color: NAVY, fontFamily: "'Inter', sans-serif" }}
             >
               {s.telefono}
             </a>
@@ -333,8 +323,8 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
 
       {/* Mapa */}
       <div className="px-4 pb-4">
-        <div className="rounded-xl overflow-hidden border" style={{ borderColor: matriz ? "rgba(255,255,255,0.12)" : "#eee" }}>
-          <div className="flex items-center justify-between px-4 py-2.5" style={{ backgroundColor: matriz ? NAVY_DEEP : "#F8F8F8" }}>
+        <div className="rounded-xl overflow-hidden border" style={{ borderColor: "#eee" }}>
+          <div className="flex items-center justify-between px-4 py-2.5" style={{ backgroundColor: "#F8F8F8" }}>
             <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: ORANGE, fontFamily: "'Inter', sans-serif" }}>
               Ubicación
             </p>
@@ -343,7 +333,7 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-xs font-semibold hover:underline"
-              style={{ color: matriz ? "#fff" : NAVY, fontFamily: "'Inter', sans-serif" }}
+              style={{ color: NAVY, fontFamily: "'Inter', sans-serif" }}
             >
               Cómo llegar <Arrow />
             </a>
@@ -380,8 +370,8 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
           rel="noopener noreferrer"
           className="inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl font-semibold text-sm transition-colors active:scale-95"
           style={{
-            border: `1.5px solid ${matriz ? "rgba(255,255,255,0.35)" : "rgba(26,58,107,0.25)"}`,
-            color: matriz ? "#fff" : NAVY,
+            border: "1.5px solid rgba(26,58,107,0.25)",
+            color: NAVY,
             fontFamily: "'Inter', sans-serif",
           }}
         >
