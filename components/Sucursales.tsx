@@ -232,7 +232,7 @@ export default function Sucursales() {
               Sucursal Norte — Reino de Quito
             </p>
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3988.5!2d-78.439818!3d0.0128333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2sec!4v1700000000002"
+              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3988.5!2d-78.439827!3d0.0128754!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2sec!4v1700000000002"
               width="100%"
               height="360"
               style={{ border: 0 }}

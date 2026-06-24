@@ -1,25 +1,22 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 /**
- * SucursalesV2 — 3.0. AMBAS sucursales visibles a la vez (sin tabs ni clicks).
+ * SucursalesV2 — 4.0. AMBAS sucursales visibles a la vez (sin tabs ni clicks).
  *
  * Por qué: un maestro/cliente común no descubre que hay que presionar.
- * Por eso las DOS salen siempre, cada una con su info + mapa.
+ * Por eso las DOS salen siempre, cada una con su info + galería + mapa.
  *
- * Cambio 3.0 (consistencia premium sobre fondo claro):
- *  - Las DOS tarjetas son blancas e idénticas en estructura (antes una era
- *    navy lleno y la otra blanca → se veía desbalanceado).
- *  - La Matriz se DESTACA solo con acentos naranja: anillo, barra superior
- *    y badge "★ Casa Matriz". Sin bloque azul.
- *  - Foto real de tienda para la sucursal Norte (antes una foto de stock
- *    que no pegaba con una ferretería).
- *
- * Toque premium: indicador "Abierto ahora / Cerrado" calculado en vivo
- * según el horario real de cada local. Se calcula solo en cliente para
- * evitar desajustes de hidratación.
+ * Cambio 4.0 (más fluido + galería de fotos):
+ *  - GALERÍA por sucursal: cada tarjeta tiene un carrusel de varias fotos
+ *    (auto-avance, puntos y flechas). Para sumar fotos basta con agregar
+ *    rutas al array `fotos` de cada local.
+ *  - MAPA con carga diferida (facade): antes se cargaban 2 iframes de Google
+ *    Maps al abrir la página → eso "trababa" el scroll. Ahora se muestra una
+ *    vista previa liviana y el mapa real se carga solo al hacer clic.
+ *  - Animaciones más suaves (hover y entrada) para que se sienta premium.
  *
  * Mantiene tus datos reales. Cero dependencias nuevas.
  */
@@ -44,7 +41,8 @@ type Sucursal = {
   whatsapp: string;
   mapsEmbed: string;
   mapsLink: string;
-  foto: string;
+  /** Galería: agrega aquí todas las fotos de esta sucursal. */
+  fotos: string[];
 };
 
 const h = (abre: number, cierra: number): Tramo => ({ abre, cierra });
@@ -69,7 +67,8 @@ const sucursales: Sucursal[] = [
     mapsEmbed:
       "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.2!2d-78.4470559!3d-0.0057584!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d589cd43ca7daf%3A0x46951cfc485b2e3d!2sJerezcons!5e0!3m2!1ses!2sec!4v1700000000001",
     mapsLink: "https://maps.google.com/?q=Jerezcons+Pucara+N1-203+Quito",
-    foto: "/hero.jpeg",
+    // 👉 Sucursal Matriz: agrega aquí sus fotos (en /public).
+    fotos: ["/hero.jpeg", "/drone.jpg", "/galeria-cemento.jpg"],
   },
   {
     id: "norte",
@@ -87,9 +86,10 @@ const sucursales: Sucursal[] = [
     telefono: "098-357-4550",
     whatsapp: "593983574550",
     mapsEmbed:
-      "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3988.5!2d-78.439818!3d0.0128333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2sec!4v1700000000002",
-    mapsLink: "https://maps.google.com/?q=Reino+de+Quito",
-    foto: "/galeria-interior.jpg",
+      "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3988.5!2d-78.439827!3d0.0128754!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2sec!4v1700000000002",
+    mapsLink: "https://maps.google.com/?q=0.0128754,-78.439827",
+    // 👉 Sucursal Rumicucho (Reino de Quito): agrega aquí sus fotos (en /public).
+    fotos: ["/galeria-interior.jpg", "/cemento.jpg"],
   },
 ];
 
@@ -166,6 +166,13 @@ function Arrow() {
     </svg>
   );
 }
+function Chevron({ dir }: { dir: "left" | "right" }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      {dir === "left" ? <path d="M15 18l-6-6 6-6" /> : <path d="M9 18l6-6-6-6" />}
+    </svg>
+  );
+}
 
 /** Pastilla de estado abierto/cerrado con punto. */
 function EstadoPill({ estado }: { estado: Estado | null }) {
@@ -184,6 +191,163 @@ function EstadoPill({ estado }: { estado: Estado | null }) {
         <span className="relative inline-flex h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
       </span>
       {estado.texto}
+    </div>
+  );
+}
+
+/**
+ * Carrusel de fotos del banner. Liviano: imágenes apiladas con cross-fade.
+ * Auto-avanza, se pausa al pasar el mouse y trae flechas + puntos.
+ */
+function Carrusel({ fotos, nombre }: { fotos: string[]; nombre: string }) {
+  const [idx, setIdx] = useState(0);
+  const [pausado, setPausado] = useState(false);
+  const total = fotos.length;
+
+  const ir = useCallback((n: number) => setIdx((n + total) % total), [total]);
+
+  useEffect(() => {
+    if (pausado || total <= 1) return;
+    const id = setInterval(() => setIdx((i) => (i + 1) % total), 4800);
+    return () => clearInterval(id);
+  }, [pausado, total]);
+
+  return (
+    <div
+      className="absolute inset-0"
+      onMouseEnter={() => setPausado(true)}
+      onMouseLeave={() => setPausado(false)}
+    >
+      {/* Imágenes apiladas con cross-fade */}
+      {fotos.map((src, i) => (
+        <div
+          key={src + i}
+          aria-hidden={i !== idx}
+          className="absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-out"
+          style={{
+            backgroundImage: `url(${src})`,
+            opacity: i === idx ? 1 : 0,
+            transform: i === idx ? "scale(1.04)" : "scale(1)",
+            transitionProperty: "opacity, transform",
+          }}
+        />
+      ))}
+
+      {/* Flechas (solo si hay más de una foto) */}
+      {total > 1 && (
+        <>
+          <button
+            type="button"
+            aria-label="Foto anterior"
+            onClick={() => ir(idx - 1)}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 items-center justify-center rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:scale-110 active:scale-95"
+            style={{ backgroundColor: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
+          >
+            <Chevron dir="left" />
+          </button>
+          <button
+            type="button"
+            aria-label="Foto siguiente"
+            onClick={() => ir(idx + 1)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 items-center justify-center rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:scale-110 active:scale-95"
+            style={{ backgroundColor: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
+          >
+            <Chevron dir="right" />
+          </button>
+
+          {/* Puntos */}
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
+            {fotos.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                aria-label={`Ver foto ${i + 1} de ${nombre}`}
+                onClick={() => setIdx(i)}
+                className="h-1.5 rounded-full transition-all duration-300"
+                style={{
+                  width: i === idx ? 20 : 6,
+                  backgroundColor: i === idx ? ORANGE : "rgba(255,255,255,0.7)",
+                }}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Mapa con carga diferida (facade). Muestra una vista previa liviana y solo
+ * carga el iframe de Google Maps al hacer clic → la página no se "traba".
+ */
+function MapaDiferido({ s }: { s: Sucursal }) {
+  const [activo, setActivo] = useState(false);
+
+  return (
+    <div className="rounded-xl overflow-hidden border" style={{ borderColor: "#eee" }}>
+      <div className="flex items-center justify-between px-4 py-2.5" style={{ backgroundColor: "#F8F8F8" }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: ORANGE, fontFamily: "'Inter', sans-serif" }}>
+          Ubicación
+        </p>
+        <a
+          href={s.mapsLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-xs font-semibold hover:underline"
+          style={{ color: NAVY, fontFamily: "'Inter', sans-serif" }}
+        >
+          Cómo llegar <Arrow />
+        </a>
+      </div>
+
+      {activo ? (
+        <iframe
+          src={s.mapsEmbed}
+          width="100%"
+          height={260}
+          style={{ border: 0 }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title={`Mapa ${s.nombre}`}
+          className="block w-full"
+        />
+      ) : (
+        <button
+          type="button"
+          onClick={() => setActivo(true)}
+          aria-label={`Cargar mapa de ${s.nombre}`}
+          className="group/map relative flex w-full items-center justify-center overflow-hidden"
+          style={{ height: 260 }}
+        >
+          {/* Fondo estilo mapa (cuadrícula sutil) */}
+          <div className="absolute inset-0" style={{ backgroundColor: "#EAEFF5" }} />
+          <div
+            className="absolute inset-0 opacity-[0.5]"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(26,58,107,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(26,58,107,0.08) 1px, transparent 1px)",
+              backgroundSize: "26px 26px",
+            }}
+          />
+          {/* "Calles" decorativas */}
+          <div className="absolute inset-0 opacity-60" style={{ background: "linear-gradient(115deg, transparent 46%, rgba(232,96,10,0.12) 47%, rgba(232,96,10,0.12) 50%, transparent 51%)" }} />
+
+          {/* Pin animado + CTA */}
+          <div className="relative z-10 flex flex-col items-center gap-3 text-center px-4">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full text-white shadow-lg transition-transform duration-300 group-hover/map:-translate-y-1" style={{ backgroundColor: ORANGE }}>
+              <Pin />
+            </span>
+            <span
+              className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold shadow-md"
+              style={{ color: NAVY, fontFamily: "'Inter', sans-serif" }}
+            >
+              Ver mapa interactivo
+            </span>
+          </div>
+        </button>
+      )}
     </div>
   );
 }
@@ -211,7 +375,7 @@ function InfoRow({
   );
 }
 
-/** Tarjeta de una sucursal: header + info + mapa + CTA. Ambas blancas. */
+/** Tarjeta de una sucursal: header + galería + info + mapa + CTA. */
 function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
@@ -229,40 +393,38 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 32 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -8 }}
-      className={`group relative flex flex-col h-full rounded-3xl overflow-hidden bg-white transition-shadow duration-300 ${
+      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -6 }}
+      className={`group relative flex flex-col h-full rounded-3xl overflow-hidden bg-white transition-shadow duration-300 will-change-transform ${
         matriz ? "ring-2 shadow-2xl" : "border border-gray-100 shadow-lg hover:shadow-2xl"
       }`}
       style={{ ["--tw-ring-color" as string]: ORANGE }}
     >
       {/* Acento naranja superior: marca la sucursal principal */}
       {matriz && (
-        <div className="absolute top-0 inset-x-0 h-1.5 z-20" style={{ background: `linear-gradient(90deg, ${ORANGE}, rgba(232,96,10,0.35))` }} />
+        <div className="absolute top-0 inset-x-0 h-1.5 z-30" style={{ background: `linear-gradient(90deg, ${ORANGE}, rgba(232,96,10,0.35))` }} />
       )}
 
-      {/* Banner con foto */}
+      {/* Banner con galería */}
       <div className="relative h-48 sm:h-56 w-full overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center transition-transform duration-[1.2s] group-hover:scale-110"
-          style={{ backgroundImage: `url(${s.foto})` }}
-        />
+        <Carrusel fotos={s.fotos} nombre={s.nombre} />
+
         {/* Degradado hacia blanco para fundir la foto con la tarjeta */}
         <div
-          className="absolute inset-0"
+          className="pointer-events-none absolute inset-0 z-10"
           style={{ background: "linear-gradient(180deg, rgba(15,34,68,0.15) 0%, rgba(15,34,68,0.55) 60%, #ffffff 100%)" }}
         />
 
         {/* Estado en vivo (arriba izq) */}
-        <div className="absolute top-4 left-4 z-10">
+        <div className="absolute top-4 left-4 z-20">
           <EstadoPill estado={estado} />
         </div>
 
         {/* Cinta premium (arriba der) */}
         <div
-          className="absolute top-4 right-4 z-10 inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full shadow-lg backdrop-blur-sm"
+          className="absolute top-4 right-4 z-20 inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full shadow-lg backdrop-blur-sm"
           style={{
             backgroundColor: matriz ? ORANGE : "rgba(255,255,255,0.92)",
             color: matriz ? "#fff" : NAVY,
@@ -272,7 +434,7 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
         </div>
 
         {/* Nombre sobre la foto */}
-        <div className="absolute bottom-4 left-6 right-6 z-10">
+        <div className="pointer-events-none absolute bottom-4 left-6 right-6 z-20">
           <span className="text-xs font-semibold uppercase tracking-wider text-white/90 drop-shadow" style={{ fontFamily: "'Inter', sans-serif" }}>
             {s.badge}
           </span>
@@ -321,35 +483,9 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
         </div>
       </div>
 
-      {/* Mapa */}
+      {/* Mapa (carga diferida) */}
       <div className="px-4 pb-4">
-        <div className="rounded-xl overflow-hidden border" style={{ borderColor: "#eee" }}>
-          <div className="flex items-center justify-between px-4 py-2.5" style={{ backgroundColor: "#F8F8F8" }}>
-            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: ORANGE, fontFamily: "'Inter', sans-serif" }}>
-              Ubicación
-            </p>
-            <a
-              href={s.mapsLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-semibold hover:underline"
-              style={{ color: NAVY, fontFamily: "'Inter', sans-serif" }}
-            >
-              Cómo llegar <Arrow />
-            </a>
-          </div>
-          <iframe
-            src={s.mapsEmbed}
-            width="100%"
-            height={260}
-            style={{ border: 0 }}
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title={`Mapa ${s.nombre}`}
-            className="block w-full"
-          />
-        </div>
+        <MapaDiferido s={s} />
       </div>
 
       {/* CTA */}
