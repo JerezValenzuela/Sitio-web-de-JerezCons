@@ -68,7 +68,7 @@ const sucursales: Sucursal[] = [
       "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.2!2d-78.4470559!3d-0.0057584!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d589cd43ca7daf%3A0x46951cfc485b2e3d!2sJerezcons!5e0!3m2!1ses!2sec!4v1700000000001",
     mapsLink: "https://maps.google.com/?q=Jerezcons+Pucara+N1-203+Quito",
     // 👉 Sucursal Matriz: agrega aquí sus fotos (en /public).
-    fotos: ["/hero.jpeg", "/drone.jpg", "/galeria-cemento.jpg"],
+    fotos: ["/hero.jpeg"],
   },
   {
     id: "norte",
@@ -89,7 +89,7 @@ const sucursales: Sucursal[] = [
       "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3988.5!2d-78.439827!3d0.0128754!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2sec!4v1700000000002",
     mapsLink: "https://maps.google.com/?q=0.0128754,-78.439827",
     // 👉 Sucursal Rumicucho (Reino de Quito): agrega aquí sus fotos (en /public).
-    fotos: ["/galeria-interior.jpg", "/cemento.jpg"],
+    fotos: ["/drone.jpg"],
   },
 ];
 
@@ -371,7 +371,7 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
       )}
 
       {/* Banner con galería */}
-      <div className="relative h-48 sm:h-56 w-full overflow-hidden">
+      <div className="relative h-80 sm:h-[28rem] w-full overflow-hidden">
         <Carrusel fotos={s.fotos} nombre={s.nombre} />
 
         {/* Degradado hacia blanco para fundir la foto con la tarjeta */}
@@ -467,7 +467,7 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
           href={s.mapsLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl font-semibold text-sm transition-colors active:scale-95"
+          className="flex-1 inline-flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-sm transition-colors active:scale-95"
           style={{
             border: "1.5px solid rgba(26,58,107,0.25)",
             color: NAVY,
@@ -498,7 +498,7 @@ export default function SucursalesV2() {
         style={{ backgroundColor: NAVY }}
       />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Title */}
         <motion.div
           ref={titleRef}

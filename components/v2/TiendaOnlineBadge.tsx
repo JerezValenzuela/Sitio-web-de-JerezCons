@@ -39,7 +39,7 @@ export default function TiendaOnlineBadge({ inline = false }: { inline?: boolean
       className="w-full"
       style={{ backgroundColor: "#1A3A6B" }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 py-2 text-center">
           <span className="inline-flex items-center gap-2">
             <Dot />

@@ -113,7 +113,7 @@ export default function FooterV2() {
       <div className="pointer-events-none absolute bottom-0 -left-24 h-80 w-80 rounded-full opacity-[0.07] blur-3xl" style={{ backgroundColor: ORANGE }} />
 
       {/* CTA elevado tipo tarjeta */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14">
+      <div className="relative max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-14">
         <div
           className="relative overflow-hidden rounded-3xl p-8 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl"
           style={{
@@ -160,7 +160,7 @@ export default function FooterV2() {
       </div>
 
       {/* Cuerpo del footer */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-8">
+      <div className="relative max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
           {/* Brand */}
           <div className="lg:col-span-4">

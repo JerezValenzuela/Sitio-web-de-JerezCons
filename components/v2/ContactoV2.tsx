@@ -87,7 +87,7 @@ export default function ContactoV2() {
       <div className="pointer-events-none absolute -top-24 -left-16 h-80 w-80 rounded-full opacity-[0.10] blur-3xl" style={{ backgroundColor: ORANGE }} />
       <div className="pointer-events-none absolute top-1/2 -right-24 h-96 w-96 rounded-full opacity-[0.07] blur-3xl" style={{ backgroundColor: NAVY }} />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* IZQUIERDA — mensaje + CTAs */}
           <motion.div
