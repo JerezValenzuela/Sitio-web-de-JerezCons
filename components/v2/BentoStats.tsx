@@ -29,20 +29,6 @@ type Stat = {
 
 const stats: Stat[] = [
   {
-    value: 30,
-    suffix: "+",
-    label: "Años de experiencia",
-    sub: "Construyendo confianza en Quito desde hace tres décadas.",
-    span: "wide",
-    bg: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&auto=format&fit=crop",
-    icon: (
-      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 6v6l4 2" />
-      </svg>
-    ),
-  },
-  {
     value: 2,
     label: "Sucursales en Quito",
     sub: "Matriz + Norte para atenderte mejor.",
