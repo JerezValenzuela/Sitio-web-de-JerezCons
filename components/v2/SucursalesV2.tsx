@@ -278,12 +278,11 @@ function Carrusel({ fotos, nombre }: { fotos: string[]; nombre: string }) {
 }
 
 /**
- * Mapa con carga diferida (facade). Muestra una vista previa liviana y solo
- * carga el iframe de Google Maps al hacer clic → la página no se "traba".
+ * Mapa de la sucursal: SIEMPRE visible (sin clic). Usa loading="lazy" nativo
+ * para que el navegador lo cargue al acercarse a la sección y no "trabe" al
+ * abrir la página de golpe.
  */
-function MapaDiferido({ s }: { s: Sucursal }) {
-  const [activo, setActivo] = useState(false);
-
+function Mapa({ s }: { s: Sucursal }) {
   return (
     <div className="rounded-xl overflow-hidden border" style={{ borderColor: "#eee" }}>
       <div className="flex items-center justify-between px-4 py-2.5" style={{ backgroundColor: "#F8F8F8" }}>
@@ -301,53 +300,17 @@ function MapaDiferido({ s }: { s: Sucursal }) {
         </a>
       </div>
 
-      {activo ? (
-        <iframe
-          src={s.mapsEmbed}
-          width="100%"
-          height={260}
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title={`Mapa ${s.nombre}`}
-          className="block w-full"
-        />
-      ) : (
-        <button
-          type="button"
-          onClick={() => setActivo(true)}
-          aria-label={`Cargar mapa de ${s.nombre}`}
-          className="group/map relative flex w-full items-center justify-center overflow-hidden"
-          style={{ height: 260 }}
-        >
-          {/* Fondo estilo mapa (cuadrícula sutil) */}
-          <div className="absolute inset-0" style={{ backgroundColor: "#EAEFF5" }} />
-          <div
-            className="absolute inset-0 opacity-[0.5]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(26,58,107,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(26,58,107,0.08) 1px, transparent 1px)",
-              backgroundSize: "26px 26px",
-            }}
-          />
-          {/* "Calles" decorativas */}
-          <div className="absolute inset-0 opacity-60" style={{ background: "linear-gradient(115deg, transparent 46%, rgba(232,96,10,0.12) 47%, rgba(232,96,10,0.12) 50%, transparent 51%)" }} />
-
-          {/* Pin animado + CTA */}
-          <div className="relative z-10 flex flex-col items-center gap-3 text-center px-4">
-            <span className="flex h-12 w-12 items-center justify-center rounded-full text-white shadow-lg transition-transform duration-300 group-hover/map:-translate-y-1" style={{ backgroundColor: ORANGE }}>
-              <Pin />
-            </span>
-            <span
-              className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold shadow-md"
-              style={{ color: NAVY, fontFamily: "'Inter', sans-serif" }}
-            >
-              Ver mapa interactivo
-            </span>
-          </div>
-        </button>
-      )}
+      <iframe
+        src={s.mapsEmbed}
+        width="100%"
+        height={260}
+        style={{ border: 0 }}
+        allowFullScreen
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+        title={`Mapa ${s.nombre}`}
+        className="block w-full"
+      />
     </div>
   );
 }
@@ -483,9 +446,9 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
         </div>
       </div>
 
-      {/* Mapa (carga diferida) */}
+      {/* Mapa siempre visible */}
       <div className="px-4 pb-4">
-        <MapaDiferido s={s} />
+        <Mapa s={s} />
       </div>
 
       {/* CTA */}
