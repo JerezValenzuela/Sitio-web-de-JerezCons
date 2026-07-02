@@ -2,7 +2,6 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import BentoStats from "@/components/v2/BentoStats";
 
 /**
  * QuienesSomosV2 — solo para la ruta de previsualización /v2.
@@ -69,11 +68,6 @@ export default function QuienesSomosV2() {
             <div className="absolute -bottom-4 -right-4 w-24 h-24 rounded-2xl opacity-20 -z-10" style={{ backgroundColor: "#E8600A" }} />
             <div className="absolute -top-4 -left-4 w-16 h-16 rounded-2xl opacity-10 -z-10" style={{ backgroundColor: "#1A3A6B" }} />
           </motion.div>
-        </div>
-
-        {/* Stats — versión Bento */}
-        <div className="mt-16">
-          <BentoStats />
         </div>
       </div>
     </section>

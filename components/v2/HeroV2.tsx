@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { smoothScrollTo } from "@/components/v2/SmoothScroll";
 
 /**
  * HeroV2 — versión premium del Hero.
@@ -27,16 +28,15 @@ export default function HeroV2() {
   // Parallax: la imagen baja un poco mientras hacemos scroll
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
   const imageScale = useTransform(scrollYProgress, [0, 1], [1.05, 1.15]);
-  // El overlay se oscurece al bajar
-  const overlayOpacity = useTransform(scrollYProgress, [0, 1], [0.7, 0.92]);
+  // El overlay se ACLARA al bajar: el texto se desvanece y la foto de la
+  // ferretería queda al descubierto.
+  const overlayOpacity = useTransform(scrollYProgress, [0, 0.6], [0.52, 0.18]);
+  const gradOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0.3]);
   // El contenido se desvanece y sube ligeramente (sensación de profundidad)
   const contentY = useTransform(scrollYProgress, [0, 0.6], ["0%", "-30%"]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
-  const handleScroll = (href: string) => {
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-  };
+  const handleScroll = (href: string) => smoothScrollTo(href);
 
   const titleWords = ["Tu", "ferretería", "de"];
 
@@ -67,6 +67,15 @@ export default function HeroV2() {
       <motion.div
         className="absolute inset-0"
         style={{ backgroundColor: "#1A3A6B", opacity: overlayOpacity }}
+      />
+      {/* Degradado sutil de profundidad: legibilidad sin tapar la foto */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          opacity: gradOpacity,
+          background:
+            "linear-gradient(180deg, rgba(13,27,54,0.30) 0%, rgba(13,27,54,0) 28%, rgba(13,27,54,0.18) 70%, rgba(13,27,54,0.45) 100%)",
+        }}
       />
       {/* Degradado inferior para fundir con la siguiente sección */}
       <div

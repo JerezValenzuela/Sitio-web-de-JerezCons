@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useScroll, useSpring, useTransform } from "framer-motion";
 import { useEffect, useRef, useState, useCallback } from "react";
 
 /**
@@ -483,11 +483,51 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
 }
 
 export default function SucursalesV2() {
-  const titleRef = useRef(null);
-  const titleInView = useInView(titleRef, { once: true, margin: "-60px" });
+  const zoneRef = useRef<HTMLDivElement>(null);
+  const showcaseRef = useRef<HTMLDivElement>(null);
+
+  // FASE 1 — el titular gigante "SUCURSALES" aparece con efecto 3D
+  // (se levanta girando) mientras la sección entra en pantalla, y queda
+  // fijado al centro. En esta fase todavía NO hay tarjetas.
+  const { scrollYProgress: revealProgress } = useScroll({
+    target: zoneRef,
+    offset: ["start end", "start start"],
+  });
+  const titleOpacityIn = useTransform(revealProgress, [0.45, 0.9], [0, 1]);
+  const titleRotateX = useTransform(revealProgress, [0.45, 0.98], [58, 0]);
+  const titleScaleIn = useTransform(revealProgress, [0.45, 0.98], [0.82, 1]);
+
+  // FASE 2 — con el hero ya fuera de pantalla, las dos sucursales se van
+  // "cerrando" desde los costados (Matriz ← izquierda, Reino de Quito →
+  // derecha) con un muelle para que sea bien suave, y el titular se
+  // desvanece a medida que lo tapan, hasta desaparecer.
+  const { scrollYProgress: closeProgress } = useScroll({
+    target: showcaseRef,
+    offset: ["start end", "start 0.30"],
+  });
+  const closeSmooth = useSpring(closeProgress, { stiffness: 70, damping: 22, mass: 0.9 });
+  const leftX = useTransform(closeSmooth, [0, 1], ["-72%", "0%"]);
+  const rightX = useTransform(closeSmooth, [0, 1], ["72%", "0%"]);
+  const cardsOpacity = useTransform(closeSmooth, [0, 0.2, 1], [0, 0.75, 1]);
+  const titleOpacityOut = useTransform(closeSmooth, [0.15, 0.8], [1, 0]);
+  const titleScaleOut = useTransform(closeSmooth, [0.15, 0.8], [1, 0.92]);
+
+  // Entrada × salida combinadas para el titular.
+  const titleOpacity = useTransform(
+    [titleOpacityIn, titleOpacityOut] as any,
+    ([a, b]: number[]) => a * b
+  );
+  const titleScale = useTransform(
+    [titleScaleIn, titleScaleOut] as any,
+    ([a, b]: number[]) => a * b
+  );
 
   return (
-    <section id="sucursales" className="relative py-20 lg:py-28 overflow-hidden" style={{ backgroundColor: "#F8F8F8" }}>
+    <section
+      id="sucursales"
+      className="relative pt-16 lg:pt-24 pb-20 lg:pb-28 overflow-x-clip"
+      style={{ backgroundColor: "#F8F8F8" }}
+    >
       {/* Detalles decorativos sutiles en colores de marca */}
       <div
         className="pointer-events-none absolute -top-24 -right-24 h-80 w-80 rounded-full blur-3xl opacity-[0.07]"
@@ -498,34 +538,48 @@ export default function SucursalesV2() {
         style={{ backgroundColor: NAVY }}
       />
 
-      <div className="relative max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Title */}
-        <motion.div
-          ref={titleRef}
-          initial={{ opacity: 0, y: 30 }}
-          animate={titleInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <span
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest mb-4"
-            style={{ color: ORANGE, backgroundColor: "rgba(232,96,10,0.10)", fontFamily: "'Inter', sans-serif" }}
+      <div ref={zoneRef} className="relative">
+        {/* Titular fijado al centro de la pantalla durante todo el showcase */}
+        <div className="sticky top-0 z-0 h-screen -mb-[100vh] flex flex-col items-center justify-center pointer-events-none select-none">
+          <motion.p
+            style={{ opacity: titleOpacity }}
+            className="text-center text-xs sm:text-sm font-semibold uppercase tracking-[0.3em] mb-3"
           >
-            <Pin /> Dónde encontrarnos
-          </span>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold" style={{ color: NAVY, fontFamily: "'Barlow Condensed', sans-serif" }}>
-            Nuestras Sucursales
-          </h2>
-          <div className="mx-auto mt-4 h-1 w-20 rounded-full" style={{ background: `linear-gradient(90deg, ${ORANGE}, ${NAVY})` }} />
-          <p className="mt-5 text-gray-500 max-w-xl mx-auto" style={{ fontFamily: "'Inter', sans-serif" }}>
+            <span style={{ color: ORANGE, fontFamily: "'Inter', sans-serif" }}>Dónde encontrarnos</span>
+          </motion.p>
+          <motion.h2
+            style={{
+              opacity: titleOpacity,
+              rotateX: titleRotateX,
+              scale: titleScale,
+              transformPerspective: 900,
+              color: NAVY,
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontSize: "clamp(64px, 16vw, 15rem)",
+            }}
+            className="text-center font-bold uppercase leading-[0.82] tracking-tight whitespace-nowrap will-change-transform"
+          >
+            Sucursales
+          </motion.h2>
+        </div>
+
+        {/* Aire: una pantalla completa donde el titular se luce solo */}
+        <div className="h-screen" />
+
+        {/* Las dos sucursales entran de los costados y se quedan en su sitio */}
+        <div ref={showcaseRef} className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
+            <motion.div style={{ x: leftX, opacity: cardsOpacity }} className="h-full will-change-transform">
+              <SucursalCard s={sucursales[0]} delay={0.05} />
+            </motion.div>
+            <motion.div style={{ x: rightX, opacity: cardsOpacity }} className="h-full will-change-transform">
+              <SucursalCard s={sucursales[1]} delay={0.18} />
+            </motion.div>
+          </div>
+
+          <p className="mt-10 text-center text-gray-500 max-w-xl mx-auto" style={{ fontFamily: "'Inter', sans-serif" }}>
             Dos puntos en Quito para atenderte. Visítanos o escríbenos a la sucursal que prefieras.
           </p>
-        </motion.div>
-
-        {/* Ambas sucursales visibles, mismo ancho para una lectura clara. */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
-          <SucursalCard s={sucursales[0]} delay={0.05} />
-          <SucursalCard s={sucursales[1]} delay={0.18} />
         </div>
       </div>
     </section>

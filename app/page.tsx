@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
+import SmoothScroll from "@/components/v2/SmoothScroll";
 
 import HeroV2 from "@/components/v2/HeroV2";
 import LogosMarquee from "@/components/v2/LogosMarquee";
@@ -13,16 +14,17 @@ import QuienesSomosV2 from "./v2/QuienesSomosV2";
 export default function Home() {
   return (
     <>
-      <TiendaOnlineBadge />
+      <SmoothScroll />
       <Navbar />
       <main>
         <HeroV2 />
         <LogosMarquee />
-        <QuienesSomosV2 />
         <SucursalesV2 />
+        <QuienesSomosV2 />
         <GaleriaV2 />
         <ContactoV2 />
       </main>
+      <TiendaOnlineBadge />
       <FooterV2 />
       <WhatsAppFloat />
     </>
