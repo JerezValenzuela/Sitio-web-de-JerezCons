@@ -514,12 +514,12 @@ export default function SucursalesV2() {
 
   // Entrada × salida combinadas para el titular.
   const titleOpacity = useTransform(
-    [titleOpacityIn, titleOpacityOut] as any,
-    ([a, b]: number[]) => a * b
+    [titleOpacityIn, titleOpacityOut],
+    (values: number[]) => values[0] * values[1]
   );
   const titleScale = useTransform(
-    [titleScaleIn, titleScaleOut] as any,
-    ([a, b]: number[]) => a * b
+    [titleScaleIn, titleScaleOut],
+    (values: number[]) => values[0] * values[1]
   );
 
   return (
