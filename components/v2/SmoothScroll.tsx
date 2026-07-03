@@ -21,13 +21,16 @@ export default function SmoothScroll() {
     if (prefersReduced) return;
 
     const lenis = new Lenis({
-      duration: 1.45,
-      // Frenado tipo "carro": arranca con respuesta y luego va soltando el
-      // freno cada vez más despacio (ease-out cuártico) — sin golpe final.
-      easing: (t: number) => 1 - Math.pow(1 - t, 4),
+      // Interpolación continua (lerp) en vez de tween de duración fija:
+      // cada frame se acerca un % de la distancia restante al objetivo.
+      // Esto es lo que da la sensación de "inercia" tipo Apple con la
+      // rueda del mouse — un tween de duración fija reinicia su curva en
+      // cada evento de rueda y se siente "rústico"/a saltos al scrollear
+      // seguido, que es justo lo que se quiere evitar.
+      lerp: 0.1,
       smoothWheel: true,
-      wheelMultiplier: 0.85,
-      touchMultiplier: 1.5,
+      wheelMultiplier: 1,
+      touchMultiplier: 2,
     });
 
     // Exponer para navegación suave desde otros componentes.
@@ -54,7 +57,13 @@ export default function SmoothScroll() {
 export function smoothScrollTo(target: string) {
   const lenis = (window as unknown as { __lenis?: Lenis }).__lenis;
   if (lenis) {
-    lenis.scrollTo(target, { offset: 0, duration: 1.25 });
+    // Frenado tipo "carro" solo para clics de navegación (ir a una sección):
+    // arranca con respuesta y suelta el freno cada vez más despacio.
+    lenis.scrollTo(target, {
+      offset: 0,
+      duration: 1.25,
+      easing: (t: number) => 1 - Math.pow(1 - t, 4),
+    });
     return;
   }
   const el = document.querySelector(target);
