@@ -44,6 +44,12 @@ type Sucursal = {
   mapsLink: string;
   /** Galería: agrega aquí todas las fotos de esta sucursal. */
   fotos: string[];
+  /**
+   * Encuadre del banner (CSS background-position). Por defecto "center".
+   * Valores menores en X ("20% center") corren la foto a la derecha y dejan
+   * ver el lado izquierdo (útil cuando el letrero queda cortado a la izq).
+   */
+  posicionFoto?: string;
 };
 
 const h = (abre: number, cierra: number): Tramo => ({ abre, cierra });
@@ -70,6 +76,8 @@ const sucursales: Sucursal[] = [
     mapsLink: "https://maps.google.com/?q=Jerezcons+Pucara+N1-203+Quito",
     // 👉 Sucursal Matriz: agrega aquí sus fotos (en /public).
     fotos: ["/hero.jpeg"],
+    // Corre la foto a la derecha para que el letrero "JEREZCONS" salga completo.
+    posicionFoto: "12% center",
   },
   {
     id: "norte",
@@ -201,7 +209,7 @@ function EstadoPill({ estado }: { estado: Estado | null }) {
  * Carrusel de fotos del banner. Liviano: imágenes apiladas con cross-fade.
  * Auto-avanza, se pausa al pasar el mouse y trae flechas + puntos.
  */
-function Carrusel({ fotos, nombre }: { fotos: string[]; nombre: string }) {
+function Carrusel({ fotos, nombre, posicion = "center" }: { fotos: string[]; nombre: string; posicion?: string }) {
   const [idx, setIdx] = useState(0);
   const [pausado, setPausado] = useState(false);
   const total = fotos.length;
@@ -225,9 +233,10 @@ function Carrusel({ fotos, nombre }: { fotos: string[]; nombre: string }) {
         <div
           key={src + i}
           aria-hidden={i !== idx}
-          className="absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-out"
+          className="absolute inset-0 bg-cover transition-opacity duration-700 ease-out"
           style={{
             backgroundImage: `url(${src})`,
+            backgroundPosition: posicion,
             opacity: i === idx ? 1 : 0,
             transform: i === idx ? "scale(1.04)" : "scale(1)",
             transitionProperty: "opacity, transform",
@@ -376,7 +385,7 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
 
       {/* Banner con galería */}
       <div className="relative h-80 sm:h-[28rem] w-full overflow-hidden">
-        <Carrusel fotos={s.fotos} nombre={s.nombre} />
+        <Carrusel fotos={s.fotos} nombre={s.nombre} posicion={s.posicionFoto} />
 
         {/* Degradado hacia blanco para fundir la foto con la tarjeta */}
         <div
