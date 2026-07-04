@@ -20,6 +20,17 @@ html.lenis body {
   overflow: hidden;
 }
 
+/* Nada puede empujar la página hacia los lados: mata el espacio en blanco
+   a la derecha en el teléfono (elementos animados que entran desde afuera,
+   títulos gigantes, blobs decorativos, etc.). `clip` no rompe position:sticky;
+   `hidden` queda como respaldo para navegadores viejos. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
 body {
   background-color: #ffffff;
   font-family: 'Inter', sans-serif;

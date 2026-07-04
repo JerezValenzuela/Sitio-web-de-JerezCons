@@ -20,6 +20,11 @@ export default function SmoothScroll() {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) return;
 
+    // En el teléfono el scroll es 100% nativo (sin Lenis): bajas de una,
+    // sin inercia artificial. El scroll suave queda solo para PC/laptop.
+    const isMobile = window.matchMedia("(max-width: 1023px)").matches;
+    if (isMobile) return;
+
     const lenis = new Lenis({
       // Interpolación continua (lerp) en vez de tween de duración fija:
       // cada frame se acerca un % de la distancia restante al objetivo.

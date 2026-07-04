@@ -2,6 +2,7 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import useIsMobile from "@/components/v2/useIsMobile";
 
 /**
  * QuienesSomosV2 — solo para la ruta de previsualización /v2.
@@ -11,6 +12,8 @@ import { useRef } from "react";
 export default function QuienesSomosV2() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+  // Sin animaciones de entrada en el teléfono (solo PC/laptop).
+  const isMobile = useIsMobile();
 
   return (
     <section id="quienes-somos" className="py-20 lg:py-28 bg-white">
@@ -20,8 +23,8 @@ export default function QuienesSomosV2() {
           <motion.div
             ref={ref}
             initial={{ opacity: 0, x: -50 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7, ease: "easeOut" }}
+            animate={isInView || isMobile ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: isMobile ? 0 : 0.7, ease: "easeOut" }}
           >
             <p className="text-sm font-semibold uppercase tracking-widest mb-3" style={{ color: "#E8600A", fontFamily: "'Inter', sans-serif" }}>
               Nuestra Historia
@@ -56,8 +59,8 @@ export default function QuienesSomosV2() {
           {/* Image Side */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+            animate={isInView || isMobile ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: isMobile ? 0 : 0.7, delay: isMobile ? 0 : 0.2, ease: "easeOut" }}
             className="relative"
           >
             <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-[4/3]">

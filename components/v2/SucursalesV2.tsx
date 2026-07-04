@@ -2,6 +2,7 @@
 
 import { motion, useInView, useScroll, useSpring, useTransform } from "framer-motion";
 import { useEffect, useRef, useState, useCallback } from "react";
+import useIsMobile from "@/components/v2/useIsMobile";
 
 /**
  * SucursalesV2 — 4.0. AMBAS sucursales visibles a la vez (sin tabs ni clicks).
@@ -50,7 +51,7 @@ const h = (abre: number, cierra: number): Tramo => ({ abre, cierra });
 const sucursales: Sucursal[] = [
   {
     id: "matriz",
-    nombre: "Sucursal Matriz",
+    nombre: "Matriz Pucará",
     esMatriz: true,
     badge: "Casa Matriz · Principal",
     zona: "San Antonio de Pichincha",
@@ -72,11 +73,11 @@ const sucursales: Sucursal[] = [
   },
   {
     id: "norte",
-    nombre: "Sucursal Reino de Quito",
+    nombre: "Sucursal Rumicucho",
     esMatriz: false,
     badge: "Sucursal · Norte",
-    zona: "Reino de Quito",
-    direccion: "Reino de Quito, Quito, Pichincha",
+    zona: "Rumicucho — Reino de Quito",
+    direccion: "Ruta Tanlagua y Rumihurco 2, Rumicucho, San Antonio de Pichincha",
     horarioLineas: [
       "Lun – Vie: 7:00 AM – 5:00 PM",
       "Sábado: 7:00 AM – 1:00 PM",
@@ -85,9 +86,10 @@ const sucursales: Sucursal[] = [
     horario: [null, h(420, 1020), h(420, 1020), h(420, 1020), h(420, 1020), h(420, 1020), h(420, 780)],
     telefono: "098-357-4550",
     whatsapp: "593983574550",
+    // Nueva ubicación (JEREZCONS RUMICUCHO — Ruta Tanlagua y Rumihurco 2)
     mapsEmbed:
-      "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3988.5!2d-78.439827!3d0.0128754!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2sec!4v1700000000002",
-    mapsLink: "https://maps.google.com/?q=0.0128754,-78.439827",
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.5!2d-78.4398!3d0.0129283!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e2a770078a66c8b%3A0x91dc6745f97a6714!2sJEREZCONS%20RUMICUCHO!5e0!3m2!1ses!2sec!4v1700000000002",
+    mapsLink: "https://maps.app.goo.gl/JvEBLzf9Ftfx6MbYA",
     // 👉 Sucursal Rumicucho (Reino de Quito): agrega aquí sus fotos (en /public).
     fotos: ["/drone.jpg"],
   },
@@ -152,9 +154,9 @@ function Phone() {
     </svg>
   );
 }
-function WhatsApp() {
+function WhatsApp({ size = 18 }: { size?: number }) {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
     </svg>
   );
@@ -343,6 +345,8 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const matriz = s.esMatriz;
+  // En el teléfono la tarjeta aparece de una, sin animación de entrada ni hover.
+  const isMobile = useIsMobile();
 
   // Estado abierto/cerrado: solo en cliente para evitar mismatch de hidratación.
   const [estado, setEstado] = useState<Estado | null>(null);
@@ -357,9 +361,9 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 32 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -6 }}
+      animate={inView || isMobile ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: isMobile ? 0 : 0.6, delay: isMobile ? 0 : delay, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={isMobile ? undefined : { y: -6 }}
       className={`group relative flex flex-col h-full rounded-3xl overflow-hidden bg-white transition-shadow duration-300 will-change-transform ${
         matriz ? "ring-2 shadow-2xl" : "border border-gray-100 shadow-lg hover:shadow-2xl"
       }`}
@@ -451,17 +455,19 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
         <Mapa s={s} />
       </div>
 
-      {/* CTA */}
-      <div className="px-7 sm:px-8 pb-7 sm:pb-8 mt-auto flex flex-col sm:flex-row gap-3">
+      {/* CTA: logo de WhatsApp redondo (como el flotante, pero fijo en la
+          tarjeta) + botón "Cómo llegar" */}
+      <div className="px-7 sm:px-8 pb-7 sm:pb-8 mt-auto flex items-center gap-3">
         <a
           href={`https://wa.me/${s.whatsapp}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 inline-flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-sm text-white transition-transform active:scale-95 hover:opacity-90 shadow-md"
-          style={{ backgroundColor: ORANGE, fontFamily: "'Inter', sans-serif" }}
+          aria-label={`Escribir por WhatsApp a ${s.nombre}`}
+          title="Escríbenos por WhatsApp"
+          className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full text-white shadow-xl transition-transform hover:scale-110 active:scale-95"
+          style={{ backgroundColor: "#25D366" }}
         >
-          <WhatsApp />
-          Escribir por WhatsApp
+          <WhatsApp size={28} />
         </a>
         <a
           href={s.mapsLink}
@@ -485,6 +491,9 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
 export default function SucursalesV2() {
   const zoneRef = useRef<HTMLDivElement>(null);
   const showcaseRef = useRef<HTMLDivElement>(null);
+  // En el teléfono NO hay coreografía de scroll: título normal y tarjetas
+  // directas (bajas y ya estás en las sucursales). En PC queda todo igual.
+  const isMobile = useIsMobile();
 
   // FASE 1 — el titular gigante "SUCURSALES" aparece con efecto 3D
   // (se levanta girando) mientras la sección entra en pantalla, y queda
@@ -539,8 +548,24 @@ export default function SucursalesV2() {
       />
 
       <div ref={zoneRef} className="relative">
-        {/* Titular fijado al centro de la pantalla durante todo el showcase */}
-        <div className="sticky top-0 z-0 h-screen -mb-[100vh] flex flex-col items-center justify-center pointer-events-none select-none">
+        {/* Título simple SOLO móvil: sin pantalla extra ni efectos */}
+        <div className="lg:hidden text-center mb-10 px-4">
+          <p
+            className="text-xs font-semibold uppercase tracking-[0.3em] mb-2"
+            style={{ color: ORANGE, fontFamily: "'Inter', sans-serif" }}
+          >
+            Dónde encontrarnos
+          </p>
+          <h2
+            className="font-bold uppercase leading-none tracking-tight text-5xl sm:text-6xl"
+            style={{ color: NAVY, fontFamily: "'Barlow Condensed', sans-serif" }}
+          >
+            Sucursales
+          </h2>
+        </div>
+
+        {/* Titular fijado al centro de la pantalla durante todo el showcase (solo PC) */}
+        <div className="hidden lg:flex sticky top-0 z-0 h-screen -mb-[100vh] flex-col items-center justify-center pointer-events-none select-none">
           <motion.p
             style={{ opacity: titleOpacity }}
             className="text-center text-xs sm:text-sm font-semibold uppercase tracking-[0.3em] mb-3"
@@ -563,16 +588,18 @@ export default function SucursalesV2() {
           </motion.h2>
         </div>
 
-        {/* Aire: una pantalla completa donde el titular se luce solo */}
-        <div className="h-screen" />
+        {/* Aire: una pantalla completa donde el titular se luce solo (solo PC) */}
+        <div className="hidden lg:block h-screen" />
 
         {/* Las dos sucursales entran de los costados y se quedan en su sitio */}
         <div ref={showcaseRef} className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
-            <motion.div style={{ x: leftX, opacity: cardsOpacity }} className="h-full will-change-transform">
+            {/* En móvil: valores fijos (x:0, opacity:1) para que Framer limpie
+                cualquier estilo previo y las tarjetas se vean de una. */}
+            <motion.div style={isMobile ? { x: 0, opacity: 1 } : { x: leftX, opacity: cardsOpacity }} className="h-full will-change-transform">
               <SucursalCard s={sucursales[0]} delay={0.05} />
             </motion.div>
-            <motion.div style={{ x: rightX, opacity: cardsOpacity }} className="h-full will-change-transform">
+            <motion.div style={isMobile ? { x: 0, opacity: 1 } : { x: rightX, opacity: cardsOpacity }} className="h-full will-change-transform">
               <SucursalCard s={sucursales[1]} delay={0.18} />
             </motion.div>
           </div>

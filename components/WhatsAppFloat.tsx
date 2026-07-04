@@ -21,8 +21,9 @@ export default function WhatsAppFloat() {
     if (typeof window !== "undefined") sessionStorage.setItem("waBubbleSeen", "1");
   };
 
+  // En el teléfono NO se muestra (pedido del dueño); en PC/laptop sigue fijo.
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="hidden lg:block fixed bottom-6 right-6 z-50">
       {/* Pop-up / burbuja de mensaje */}
       <AnimatePresence>
         {showBubble && (

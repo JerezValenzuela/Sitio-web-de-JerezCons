@@ -80,8 +80,16 @@ export default function LogosMarquee() {
       </p>
 
       <div className="relative w-full overflow-hidden">
+        {/* Móvil: SIN animación — banda estática que se desliza con el dedo */}
+        <div className="flex items-center overflow-x-auto lg:hidden" style={{ WebkitOverflowScrolling: "touch" }}>
+          {marcas.map((m, i) => (
+            <LogoItem key={i} marca={m} />
+          ))}
+        </div>
+
+        {/* PC/laptop: marquee animado como siempre */}
         <motion.div
-          className="flex w-max items-center"
+          className="hidden lg:flex w-max items-center"
           animate={{ x: ["0%", "-50%"] }}
           transition={{ duration: 36.96, ease: "linear", repeat: Infinity }}
         >

@@ -2,6 +2,7 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import useIsMobile from "@/components/v2/useIsMobile";
 
 /**
  * ContactoV2 — 3.0. Fondo CLARO (regla "blanco base siempre").
@@ -65,6 +66,8 @@ function WhatsAppIcon({ size = 24 }: { size?: number }) {
 export default function ContactoV2() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+  // Sin animaciones de entrada en el teléfono (solo PC/laptop).
+  const isMobile = useIsMobile();
 
   return (
     <section
@@ -93,8 +96,8 @@ export default function ContactoV2() {
           <motion.div
             ref={ref}
             initial={{ opacity: 0, x: -40 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7, ease: "easeOut" }}
+            animate={isInView || isMobile ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: isMobile ? 0 : 0.7, ease: "easeOut" }}
             className="text-center lg:text-left min-w-0"
           >
             <span
@@ -163,8 +166,8 @@ export default function ContactoV2() {
           {/* DERECHA — tarjeta blanca de contacto */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            animate={isInView || isMobile ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: isMobile ? 0 : 0.7, delay: isMobile ? 0 : 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="relative rounded-3xl bg-white p-7 sm:p-9 ring-1 ring-black/5"
             style={{ boxShadow: "0 30px 70px -25px rgba(26,58,107,0.35), 0 8px 24px -12px rgba(26,58,107,0.18)" }}
           >

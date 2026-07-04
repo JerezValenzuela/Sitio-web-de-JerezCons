@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
+import useIsMobile from "@/components/v2/useIsMobile";
 
 /**
  * GaleriaV2 — galería dividida por sucursal en DOS columnas verticales.
@@ -26,7 +27,7 @@ type GaleriaSucursal = { sucursal: string; badge: string; fotos: Foto[] };
 
 const galerias: GaleriaSucursal[] = [
   {
-    sucursal: "Sucursal Matriz",
+    sucursal: "Matriz Pucará",
     badge: "Casa Matriz",
     fotos: [
       { src: "/galeria-cemento.jpg", alt: "Cemento y materiales", categoria: "Materiales" },
@@ -35,7 +36,7 @@ const galerias: GaleriaSucursal[] = [
     ],
   },
   {
-    sucursal: "Sucursal Reino de Quito",
+    sucursal: "Sucursal Rumicucho",
     badge: "Norte",
     fotos: [
       { src: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=900&auto=format&fit=crop", alt: "Pinturas y acabados", categoria: "Acabados" },
@@ -66,6 +67,8 @@ function Pin() {
 
 export default function GaleriaV2() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  // Sin animaciones de entrada en el teléfono (solo PC/laptop).
+  const isMobile = useIsMobile();
 
   const close = useCallback(() => setOpenIndex(null), []);
   const next = useCallback(
@@ -110,7 +113,7 @@ export default function GaleriaV2() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: isMobile ? 0 : 0.5 }}
                 className="mb-5 flex items-center gap-3"
               >
                 <span
@@ -146,7 +149,7 @@ export default function GaleriaV2() {
                       initial={{ opacity: 0, y: 24 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: "-30px" }}
-                      transition={{ duration: 0.5, delay: j * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ duration: isMobile ? 0 : 0.5, delay: isMobile ? 0 : j * 0.08, ease: [0.22, 1, 0.36, 1] }}
                       className="relative block w-full overflow-hidden rounded-2xl group cursor-zoom-in focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-sm hover:shadow-xl transition-shadow"
                       style={{ ["--tw-ring-color" as string]: ORANGE }}
                     >
@@ -195,7 +198,7 @@ export default function GaleriaV2() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: isMobile ? 0 : 0.5 }}
           className="mt-12 text-center"
         >
           <p className="text-gray-500 mb-5" style={{ fontFamily: "'Inter', sans-serif" }}>

@@ -254,7 +254,7 @@ export default function FooterV2() {
               <div className="flex items-start gap-3">
                 <PinIcon />
                 <p className="text-white/70 text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>
-                  Reino de Quito, Quito, Pichincha
+                  Ruta Tanlagua y Rumihurco 2, Rumicucho
                 </p>
               </div>
               <div className="flex items-center gap-3">

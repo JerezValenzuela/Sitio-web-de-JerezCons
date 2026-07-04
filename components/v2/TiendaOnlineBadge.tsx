@@ -1,7 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
-
 /**
  * TiendaOnlineBadge — aviso PEQUEÑO "Tienda online en construcción".
  *
@@ -32,10 +30,7 @@ export default function TiendaOnlineBadge({ inline = false }: { inline?: boolean
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+    <div
       className="w-full"
       style={{ backgroundColor: "#1A3A6B" }}
     >
@@ -63,7 +58,7 @@ export default function TiendaOnlineBadge({ inline = false }: { inline?: boolean
           </a>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
