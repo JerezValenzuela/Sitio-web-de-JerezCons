@@ -22,7 +22,10 @@ import useIsMobile from "@/components/v2/useIsMobile";
 const NAVY = "#1A3A6B";
 const ORANGE = "#E8600A";
 
-type Foto = { src: string; alt: string; categoria: string };
+// `srcs`: normalmente 1 foto. Si tiene varias, la tarjeta las rota entre sí
+// (mismo espacio, misma categoría) — útil para sumar una foto nueva sin
+// crear una tarjeta aparte.
+type Foto = { srcs: string[]; alt: string; categoria: string };
 type GaleriaSucursal = { sucursal: string; badge: string; fotos: Foto[] };
 
 const galerias: GaleriaSucursal[] = [
@@ -30,29 +33,34 @@ const galerias: GaleriaSucursal[] = [
     sucursal: "Matriz Pucará",
     badge: "Casa Matriz",
     fotos: [
-      { src: "/galeria-cemento.jpg", alt: "Cemento y materiales", categoria: "Materiales" },
-      { src: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&auto=format&fit=crop", alt: "Materiales de construcción", categoria: "Construcción" },
-      { src: "/galeria-interior.jpg", alt: "Interior de la ferretería", categoria: "Tienda" },
+      {
+        srcs: ["/galeria-cemento.jpg", "/galeria-camion-materiales.jpg"],
+        alt: "Cemento y materiales",
+        categoria: "Materiales",
+      },
+      { srcs: ["https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&auto=format&fit=crop"], alt: "Materiales de construcción", categoria: "Construcción" },
+      { srcs: ["/galeria-interior.jpg"], alt: "Interior de la ferretería", categoria: "Tienda" },
     ],
   },
   {
     sucursal: "Sucursal Rumicucho",
     badge: "Norte",
     fotos: [
-      { src: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=900&auto=format&fit=crop", alt: "Pinturas y acabados", categoria: "Acabados" },
-      { src: "https://images.unsplash.com/photo-1508873699372-7aeab60b44ab?w=900&auto=format&fit=crop", alt: "Proyectos completados", categoria: "Proyectos" },
-      { src: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=900&auto=format&fit=crop", alt: "Ferretería y construcción", categoria: "Herramientas" },
+      { srcs: ["https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=900&auto=format&fit=crop"], alt: "Pinturas y acabados", categoria: "Acabados" },
+      { srcs: ["https://images.unsplash.com/photo-1508873699372-7aeab60b44ab?w=900&auto=format&fit=crop"], alt: "Proyectos completados", categoria: "Proyectos" },
+      { srcs: ["https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=900&auto=format&fit=crop"], alt: "Ferretería y construcción", categoria: "Herramientas" },
     ],
   },
 ];
 
 // Lista plana de todas las fotos (con su sucursal) para navegar el lightbox.
+// Una tarjeta con varias `srcs` aporta varias entradas seguidas al lightbox.
 const allPhotos = galerias.flatMap((g) =>
-  g.fotos.map((f) => ({ ...f, sucursal: g.sucursal }))
+  g.fotos.flatMap((f) => f.srcs.map((src) => ({ src, alt: f.alt, categoria: f.categoria, sucursal: g.sucursal })))
 );
 // Índice global de la primera foto de cada columna, para mapear el clic.
 const offsets = galerias.reduce<number[]>((acc, _g, i) => {
-  acc.push(i === 0 ? 0 : acc[i - 1] + galerias[i - 1].fotos.length);
+  acc.push(i === 0 ? 0 : acc[i - 1] + galerias[i - 1].fotos.flatMap((f) => f.srcs).length);
   return acc;
 }, []);
 
@@ -62,6 +70,100 @@ function Pin() {
       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
       <circle cx="12" cy="10" r="3" />
     </svg>
+  );
+}
+
+/**
+ * Tarjeta de una foto (o varias que comparten el mismo espacio/categoría,
+ * rotando entre sí con cross-fade automático cada pocos segundos).
+ */
+function TarjetaFoto({
+  photo,
+  idxBase,
+  delay,
+  isMobile,
+  onAbrir,
+}: {
+  photo: Foto;
+  idxBase: number;
+  delay: number;
+  isMobile: boolean;
+  onAbrir: (sub: number) => void;
+}) {
+  const [sub, setSub] = useState(0);
+  const varias = photo.srcs.length > 1;
+
+  useEffect(() => {
+    if (!varias) return;
+    const id = setInterval(() => setSub((s) => (s + 1) % photo.srcs.length), 4200);
+    return () => clearInterval(id);
+  }, [varias, photo.srcs.length]);
+
+  return (
+    <motion.button
+      onClick={() => onAbrir(sub)}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-30px" }}
+      transition={{ duration: isMobile ? 0 : 0.5, delay: isMobile ? 0 : delay, ease: [0.22, 1, 0.36, 1] }}
+      className="relative block w-full overflow-hidden rounded-2xl group cursor-zoom-in focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-sm hover:shadow-xl transition-shadow"
+      style={{ ["--tw-ring-color" as string]: ORANGE }}
+    >
+      <div className="relative h-64 sm:h-72 w-full">
+        {photo.srcs.map((src, i) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={src}
+            src={src}
+            alt={photo.alt}
+            loading="lazy"
+            aria-hidden={i !== sub}
+            className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out group-hover:scale-110"
+            style={{ opacity: i === sub ? 1 : 0, transitionProperty: "opacity, transform" }}
+          />
+        ))}
+      </div>
+
+      {/* Degradado base permanente para legibilidad */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0F2244]/65 via-transparent to-transparent" />
+
+      {/* Etiqueta de categoría (siempre visible) */}
+      <span
+        className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white shadow-md"
+        style={{ backgroundColor: ORANGE, fontFamily: "'Inter', sans-serif" }}
+      >
+        {photo.categoria}
+      </span>
+
+      {/* Puntos (solo si hay más de una foto compartiendo el espacio) */}
+      {varias && (
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
+          {photo.srcs.map((_, i) => (
+            <span
+              key={i}
+              className="h-1.5 rounded-full transition-all duration-300"
+              style={{ width: i === sub ? 16 : 6, backgroundColor: i === sub ? "#fff" : "rgba(255,255,255,0.5)" }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Título abajo */}
+      <div className="absolute inset-x-0 bottom-0 p-4 flex items-end justify-between gap-2">
+        <p className="text-white text-sm sm:text-base font-semibold drop-shadow translate-y-1 opacity-90 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+          {photo.alt}
+        </p>
+      </div>
+
+      {/* Icono lupa al hover (oculto cuando ya se muestran los puntos, para no chocar) */}
+      {!varias && (
+        <span className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#1A3A6B] opacity-0 translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.35-4.35" /><path d="M11 8v6M8 11h6" />
+          </svg>
+        </span>
+      )}
+    </motion.button>
   );
 }
 
@@ -140,54 +242,23 @@ export default function GaleriaV2() {
 
               {/* Columna vertical de fotos ("palo largo") */}
               <div className="flex flex-col gap-4">
-                {g.fotos.map((photo, j) => {
-                  const idx = offsets[gi] + j;
-                  return (
-                    <motion.button
-                      key={photo.src}
-                      onClick={() => setOpenIndex(idx)}
-                      initial={{ opacity: 0, y: 24 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: "-30px" }}
-                      transition={{ duration: isMobile ? 0 : 0.5, delay: isMobile ? 0 : j * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                      className="relative block w-full overflow-hidden rounded-2xl group cursor-zoom-in focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-sm hover:shadow-xl transition-shadow"
-                      style={{ ["--tw-ring-color" as string]: ORANGE }}
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={photo.src}
-                        alt={photo.alt}
-                        loading="lazy"
-                        className="h-64 sm:h-72 w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                {(() => {
+                  let acumulado = 0;
+                  return g.fotos.map((photo, j) => {
+                    const idxBase = offsets[gi] + acumulado;
+                    acumulado += photo.srcs.length;
+                    return (
+                      <TarjetaFoto
+                        key={photo.srcs[0]}
+                        photo={photo}
+                        idxBase={idxBase}
+                        delay={j * 0.08}
+                        isMobile={isMobile}
+                        onAbrir={(sub) => setOpenIndex(idxBase + sub)}
                       />
-
-                      {/* Degradado base permanente para legibilidad */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0F2244]/65 via-transparent to-transparent" />
-
-                      {/* Etiqueta de categoría (siempre visible) */}
-                      <span
-                        className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white shadow-md"
-                        style={{ backgroundColor: ORANGE, fontFamily: "'Inter', sans-serif" }}
-                      >
-                        {photo.categoria}
-                      </span>
-
-                      {/* Título abajo */}
-                      <div className="absolute inset-x-0 bottom-0 p-4 flex items-end justify-between gap-2">
-                        <p className="text-white text-sm sm:text-base font-semibold drop-shadow translate-y-1 opacity-90 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300" style={{ fontFamily: "'Inter', sans-serif" }}>
-                          {photo.alt}
-                        </p>
-                      </div>
-
-                      {/* Icono lupa al hover */}
-                      <span className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#1A3A6B] opacity-0 translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.35-4.35" /><path d="M11 8v6M8 11h6" />
-                        </svg>
-                      </span>
-                    </motion.button>
-                  );
-                })}
+                    );
+                  });
+                })()}
               </div>
             </div>
           ))}
