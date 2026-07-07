@@ -79,13 +79,11 @@ function Pin() {
  */
 function TarjetaFoto({
   photo,
-  idxBase,
   delay,
   isMobile,
   onAbrir,
 }: {
   photo: Foto;
-  idxBase: number;
   delay: number;
   isMobile: boolean;
   onAbrir: (sub: number) => void;
@@ -251,7 +249,6 @@ export default function GaleriaV2() {
                       <TarjetaFoto
                         key={photo.srcs[0]}
                         photo={photo}
-                        idxBase={idxBase}
                         delay={j * 0.08}
                         isMobile={isMobile}
                         onAbrir={(sub) => setOpenIndex(idxBase + sub)}
