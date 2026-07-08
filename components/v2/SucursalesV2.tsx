@@ -3,6 +3,7 @@
 import { motion, useInView, useScroll, useSpring, useTransform } from "framer-motion";
 import { useEffect, useRef, useState, useCallback } from "react";
 import useIsMobile from "@/components/v2/useIsMobile";
+import FotosLocalMovil from "@/components/v2/FotosLocalMovil";
 
 /**
  * SucursalesV2 — 4.0. AMBAS sucursales visibles a la vez (sin tabs ni clicks).
@@ -85,7 +86,7 @@ const sucursales: Sucursal[] = [
     esMatriz: false,
     badge: "Sucursal · Norte",
     zona: "Rumicucho — Reino de Quito",
-    direccion: "Ruta Tanlagua y Rumihurco 2, Rumicucho, San Antonio de Pichincha",
+    direccion: "Ruta Tanlahua y Rumihurco 2, Rumicucho, San Antonio de Pichincha",
     horarioLineas: [
       "Lun – Vie: 7:00 AM – 5:00 PM",
       "Sábado: 7:00 AM – 1:00 PM",
@@ -94,7 +95,7 @@ const sucursales: Sucursal[] = [
     horario: [null, h(420, 1020), h(420, 1020), h(420, 1020), h(420, 1020), h(420, 1020), h(420, 780)],
     telefono: "098-357-4550",
     whatsapp: "593983574550",
-    // Nueva ubicación (JEREZCONS RUMICUCHO — Ruta Tanlagua y Rumihurco 2)
+    // Nueva ubicación (JEREZCONS RUMICUCHO — Ruta Tanlahua y Rumihurco 2)
     mapsEmbed:
       "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.5!2d-78.4398!3d0.0129283!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e2a770078a66c8b%3A0x91dc6745f97a6714!2sJEREZCONS%20RUMICUCHO!5e0!3m2!1ses!2sec!4v1700000000002",
     mapsLink: "https://maps.app.goo.gl/JvEBLzf9Ftfx6MbYA",
@@ -398,13 +399,10 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
           <EstadoPill estado={estado} />
         </div>
 
-        {/* Cinta premium (arriba der) */}
+        {/* Cinta premium (arriba der). Naranja con letras blancas en TODAS
+            las vistas (teléfono y PC), igual para Casa Matriz y Sucursal. */}
         <div
-          className="absolute top-4 right-4 z-20 inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full shadow-lg backdrop-blur-sm"
-          style={{
-            backgroundColor: matriz ? ORANGE : "rgba(255,255,255,0.92)",
-            color: matriz ? "#fff" : NAVY,
-          }}
+          className="absolute top-4 right-4 z-20 inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full shadow-lg backdrop-blur-sm text-white bg-[#E8600A]"
         >
           {matriz ? "★ Casa Matriz" : "Sucursal"}
         </div>
@@ -569,7 +567,7 @@ export default function SucursalesV2() {
             className="font-bold uppercase leading-none tracking-tight text-5xl sm:text-6xl"
             style={{ color: NAVY, fontFamily: "'Barlow Condensed', sans-serif" }}
           >
-            Sucursales
+            Locales
           </h2>
         </div>
 
@@ -593,7 +591,7 @@ export default function SucursalesV2() {
             }}
             className="text-center font-bold uppercase leading-[0.82] tracking-tight whitespace-nowrap will-change-transform"
           >
-            Sucursales
+            Locales
           </motion.h2>
         </div>
 
@@ -608,9 +606,51 @@ export default function SucursalesV2() {
             <motion.div style={isMobile ? { x: 0, opacity: 1 } : { x: leftX, opacity: cardsOpacity }} className="h-full will-change-transform">
               <SucursalCard s={sucursales[0]} delay={0.05} />
             </motion.div>
+
+            {/* SOLO teléfono: fotos de la Matriz justo debajo de su tarjeta.
+                Van FUERA del motion.div porque su will-change-transform
+                rompería el visor a pantalla completa (position: fixed).
+                En PC son display:none y no ocupan celda en la grilla. */}
+            <div className="lg:hidden">
+              <FotosLocalMovil indice={0} />
+            </div>
+
+            {/* SOLO teléfono: separador GRANDE entre un local y otro. Sin él,
+                la última foto de la Matriz se confunde con la primera de
+                Rumicucho (parece que siguen las fotos del mismo local). */}
+            <div className="lg:hidden pt-10 pb-2">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="h-px flex-1" style={{ backgroundColor: "rgba(26,58,107,0.18)" }} />
+                <span
+                  className="flex h-10 w-10 items-center justify-center rounded-full flex-shrink-0"
+                  style={{ backgroundColor: NAVY, color: ORANGE }}
+                >
+                  <Pin />
+                </span>
+                <span className="h-px flex-1" style={{ backgroundColor: "rgba(26,58,107,0.18)" }} />
+              </div>
+              <p
+                className="text-center text-xs font-semibold uppercase tracking-[0.3em]"
+                style={{ color: ORANGE, fontFamily: "'Inter', sans-serif" }}
+              >
+                Segundo local
+              </p>
+              <h3
+                className="text-center font-bold uppercase leading-none tracking-tight text-5xl sm:text-6xl"
+                style={{ color: NAVY, fontFamily: "'Barlow Condensed', sans-serif" }}
+              >
+                Rumicucho
+              </h3>
+            </div>
+
             <motion.div style={isMobile ? { x: 0, opacity: 1 } : { x: rightX, opacity: cardsOpacity }} className="h-full will-change-transform">
               <SucursalCard s={sucursales[1]} delay={0.18} />
             </motion.div>
+
+            {/* SOLO teléfono: fotos de Rumicucho justo debajo de su tarjeta */}
+            <div className="lg:hidden">
+              <FotosLocalMovil indice={1} />
+            </div>
           </div>
 
           <p className="mt-10 text-center text-gray-500 max-w-xl mx-auto" style={{ fontFamily: "'Inter', sans-serif" }}>

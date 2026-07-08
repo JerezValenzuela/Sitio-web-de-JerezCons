@@ -19,17 +19,23 @@ import { motion } from "framer-motion";
 const NAVY = "#1A3A6B";
 const ORANGE = "#E8600A";
 
-type Marca = { name: string; special?: boolean };
+// Jerarquía visual:
+//  - hero: la marca estrella (pastilla naranja). Cemento Granel — solo lo
+//    vendemos nosotros en Quito, por eso resalta por encima de todo.
+//  - featured: marcas que más se mueven (Armaduro y Selvalegre) — navy lleno
+//    y en negrita, más notorias que el resto.
+//  - special: el wordmark propio JerezCons.
+type Marca = { name: string; special?: boolean; hero?: boolean; featured?: boolean };
 
 const marcas: Marca[] = [
+  { name: "Cemento Granel", hero: true },
   { name: "JerezCons", special: true },
-  { name: "Cemento Selvalegre" },
+  { name: "Cemento Armaduro", featured: true },
+  { name: "Cemento Selvalegre", featured: true },
   { name: "Varilla Adelca" },
   { name: "Plastigama" },
   { name: "Intaco" },
-  { name: "Bloque" },
-  { name: "Cemento Armaduro" },
-  { name: "Cemento Granel" },
+  { name: "Rival" },
 ];
 
 function Mark() {
@@ -42,6 +48,26 @@ function Mark() {
 }
 
 function LogoItem({ marca }: { marca: Marca }) {
+  // Marca estrella: pastilla naranja con letras blancas, la que más salta.
+  if (marca.hero) {
+    return (
+      <div className="flex items-center px-8 sm:px-10 select-none">
+        <span
+          className="inline-flex items-center gap-2.5 rounded-full px-5 py-2 shadow-md"
+          style={{ backgroundColor: ORANGE }}
+        >
+          <span className="inline-block h-2.5 w-2.5 rotate-45 rounded-[2px] bg-white flex-shrink-0" />
+          <span
+            className="text-2xl sm:text-3xl font-bold whitespace-nowrap text-white"
+            style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
+          >
+            {marca.name}
+          </span>
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center gap-3 px-8 sm:px-10 select-none">
       <Mark />
@@ -52,8 +78,14 @@ function LogoItem({ marca }: { marca: Marca }) {
         </span>
       ) : (
         <span
-          className="text-2xl sm:text-3xl font-semibold whitespace-nowrap tracking-tight"
-          style={{ color: NAVY, fontFamily: "'Barlow Condensed', sans-serif", opacity: 0.75 }}
+          className="text-2xl sm:text-3xl whitespace-nowrap tracking-tight"
+          style={{
+            color: NAVY,
+            fontFamily: "'Barlow Condensed', sans-serif",
+            // Armaduro y Selvalegre resaltan: navy lleno y en negrita.
+            fontWeight: marca.featured ? 700 : 600,
+            opacity: marca.featured ? 1 : 0.75,
+          }}
         >
           {marca.name}
         </span>

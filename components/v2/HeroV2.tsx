@@ -165,7 +165,7 @@ export default function HeroV2() {
             className="inline-flex items-center justify-center px-8 py-4 rounded-md text-base font-semibold border-2 text-white transition-colors"
             style={{ borderColor: "#ffffff", fontFamily: "'Inter', sans-serif" }}
           >
-            Ver sucursales
+            Ver locales
           </motion.button>
         </motion.div>
       </motion.div>

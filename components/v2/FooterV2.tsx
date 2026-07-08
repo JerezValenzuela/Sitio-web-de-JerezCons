@@ -20,7 +20,7 @@ const ORANGE = "#E8600A";
 const quickLinks = [
   { label: "Inicio", href: "#inicio" },
   { label: "Quiénes Somos", href: "#quienes-somos" },
-  { label: "Sucursales", href: "#sucursales" },
+  { label: "Locales", href: "#sucursales" },
   { label: "Galería", href: "#galeria" },
   { label: "Contacto", href: "#contacto" },
 ];
@@ -174,7 +174,7 @@ export default function FooterV2() {
 
             {/* Mini badges de confianza */}
             <div className="flex flex-wrap gap-2 mt-5">
-              {["+30 años", "2 sucursales", "Atención L–D"].map((b) => (
+              {["+30 años", "2 locales", "Atención L–D"].map((b) => (
                 <span
                   key={b}
                   className="px-3 py-1 rounded-full text-xs font-medium text-white/80"

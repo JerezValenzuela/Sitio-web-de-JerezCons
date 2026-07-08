@@ -1,5 +1,4 @@
 import Navbar from "@/components/Navbar";
-import WhatsAppFloat from "@/components/WhatsAppFloat";
 
 import HeroV2 from "@/components/v2/HeroV2";
 import LogosMarquee from "@/components/v2/LogosMarquee";
@@ -33,7 +32,6 @@ export default function PreviewV2() {
         <ContactoV2 />
       </main>
       <FooterV2 />
-      <WhatsAppFloat />
     </>
   );
 }

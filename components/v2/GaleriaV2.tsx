@@ -3,55 +3,24 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import useIsMobile from "@/components/v2/useIsMobile";
+import { galerias, type Foto } from "@/components/v2/galeriaData";
 
 /**
  * GaleriaV2 — galería dividida por sucursal en DOS columnas verticales.
  *
- * Cambio: antes era un único bento mezclado. Ahora cada sucursal (Matriz y
- * Reino de Quito) tiene su propia columna vertical de fotos, igual estructura
- * que la sección "Nuestras Sucursales". Cada columna es un "palo largo"
- * vertical con el nombre de su sucursal arriba.
+ * SOLO PC/laptop: en el teléfono esta sección se oculta y las fotos salen
+ * debajo de la tarjeta de cada local (FotosLocalMovil, dentro de la sección
+ * "Dónde encontrarnos").
  *
  * El lightbox sigue funcionando sobre TODAS las fotos juntas (flechas + teclado
  * ← → Esc), y en el pie muestra a qué sucursal pertenece cada foto.
  *
  * 👉 Para sumar fotos a una sucursal, agrega objetos al array `fotos` de esa
- *    sucursal en `galerias`. Cero dependencias nuevas.
+ *    sucursal en `galeriaData.ts`. Cero dependencias nuevas.
  */
 
 const NAVY = "#1A3A6B";
 const ORANGE = "#E8600A";
-
-// `srcs`: normalmente 1 foto. Si tiene varias, la tarjeta las rota entre sí
-// (mismo espacio, misma categoría) — útil para sumar una foto nueva sin
-// crear una tarjeta aparte.
-type Foto = { srcs: string[]; alt: string; categoria: string };
-type GaleriaSucursal = { sucursal: string; badge: string; fotos: Foto[] };
-
-const galerias: GaleriaSucursal[] = [
-  {
-    sucursal: "Matriz Pucará",
-    badge: "Casa Matriz",
-    fotos: [
-      {
-        srcs: ["/galeria-cemento.jpg", "/galeria-camion-materiales.jpg"],
-        alt: "Cemento y materiales",
-        categoria: "Materiales",
-      },
-      { srcs: ["https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&auto=format&fit=crop"], alt: "Materiales de construcción", categoria: "Construcción" },
-      { srcs: ["/galeria-interior.jpg"], alt: "Interior de la ferretería", categoria: "Tienda" },
-    ],
-  },
-  {
-    sucursal: "Sucursal Rumicucho",
-    badge: "Norte",
-    fotos: [
-      { srcs: ["https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=900&auto=format&fit=crop"], alt: "Pinturas y acabados", categoria: "Acabados" },
-      { srcs: ["https://images.unsplash.com/photo-1508873699372-7aeab60b44ab?w=900&auto=format&fit=crop"], alt: "Proyectos completados", categoria: "Proyectos" },
-      { srcs: ["https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=900&auto=format&fit=crop"], alt: "Ferretería y construcción", categoria: "Herramientas" },
-    ],
-  },
-];
 
 // Lista plana de todas las fotos (con su sucursal) para navegar el lightbox.
 // Una tarjeta con varias `srcs` aporta varias entradas seguidas al lightbox.
@@ -76,8 +45,9 @@ function Pin() {
 /**
  * Tarjeta de una foto (o varias que comparten el mismo espacio/categoría,
  * rotando entre sí con cross-fade automático cada pocos segundos).
+ * Se exporta para reutilizarla en FotosLocalMovil (teléfono).
  */
-function TarjetaFoto({
+export function TarjetaFoto({
   photo,
   delay,
   isMobile,
@@ -198,7 +168,8 @@ export default function GaleriaV2() {
   }, [openIndex, close, next, prev]);
 
   return (
-    <section id="galeria" className="relative pt-8 pb-20 lg:pt-12 lg:pb-28 bg-white overflow-hidden">
+    // Oculta en el teléfono: ahí las fotos van debajo de cada local (FotosLocalMovil).
+    <section id="galeria" className="hidden lg:block relative pt-8 pb-20 lg:pt-12 lg:pb-28 bg-white overflow-hidden">
       {/* Detalles decorativos sutiles de marca */}
       <div className="pointer-events-none absolute -top-20 -left-24 h-80 w-80 rounded-full blur-3xl opacity-[0.06]" style={{ backgroundColor: ORANGE }} />
       <div className="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full blur-3xl opacity-[0.05]" style={{ backgroundColor: NAVY }} />

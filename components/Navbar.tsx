@@ -7,7 +7,7 @@ import { smoothScrollTo } from "@/components/v2/SmoothScroll";
 const navLinks = [
   { label: "Inicio", href: "#inicio" },
   { label: "Quiénes Somos", href: "#quienes-somos" },
-  { label: "Sucursales", href: "#sucursales" },
+  { label: "Locales", href: "#sucursales" },
   { label: "Galería", href: "#galeria" },
   { label: "Contacto", href: "#contacto" },
 ];

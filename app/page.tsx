@@ -1,5 +1,4 @@
 import Navbar from "@/components/Navbar";
-import WhatsAppFloat from "@/components/WhatsAppFloat";
 import SmoothScroll from "@/components/v2/SmoothScroll";
 
 import HeroV2 from "@/components/v2/HeroV2";
@@ -26,7 +25,6 @@ export default function Home() {
       </main>
       <TiendaOnlineBadge />
       <FooterV2 />
-      <WhatsAppFloat />
     </>
   );
 }
