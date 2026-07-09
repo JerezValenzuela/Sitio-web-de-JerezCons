@@ -135,6 +135,123 @@ export function TarjetaFoto({
   );
 }
 
+/**
+ * CarruselSucursal — un ÚNICO recuadro grande por sucursal (PC) que contiene
+ * TODAS sus fotos. Se pasa de una a otra con las flechas ‹ ›; al hacer clic en
+ * la imagen se abre el lightbox a pantalla completa en esa foto.
+ */
+export function CarruselSucursal({
+  fotos,
+  baseIndex,
+  isMobile,
+  onAbrir,
+}: {
+  fotos: Foto[];
+  baseIndex: number;
+  isMobile: boolean;
+  onAbrir: (globalIndex: number) => void;
+}) {
+  // Aplanamos todas las fotos de la sucursal en una sola lista navegable.
+  const items = fotos.flatMap((f) => f.srcs.map((src) => ({ src, alt: f.alt, categoria: f.categoria })));
+  const [i, setI] = useState(0);
+  const go = useCallback(
+    (d: number) => setI((prev) => (prev + d + items.length) % items.length),
+    [items.length]
+  );
+  const item = items[i];
+
+  // Cambio automático de foto cada 4 s (en todas las vistas). Depende de `i`,
+  // así que cada vez que el usuario pasa una foto a mano, el contador de 4 s
+  // se reinicia desde esa foto.
+  useEffect(() => {
+    if (items.length <= 1) return;
+    const id = setInterval(() => setI((prev) => (prev + 1) % items.length), 4000);
+    return () => clearInterval(id);
+  }, [items.length, i]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-30px" }}
+      transition={{ duration: isMobile ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="relative overflow-hidden rounded-2xl shadow-sm hover:shadow-xl transition-shadow group"
+    >
+      {/* Imagen (clic = abrir a pantalla completa) */}
+      <button
+        onClick={() => onAbrir(baseIndex + i)}
+        className="relative block w-full cursor-zoom-in focus:outline-none"
+        aria-label={`Ampliar foto: ${item.alt}`}
+      >
+        <div className="relative h-[26rem] xl:h-[30rem] w-full">
+          {items.map((it, idx) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={it.src}
+              src={it.src}
+              alt={it.alt}
+              loading="lazy"
+              aria-hidden={idx !== i}
+              className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out"
+              style={{ opacity: idx === i ? 1 : 0 }}
+            />
+          ))}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0F2244]/70 via-transparent to-transparent" />
+        </div>
+
+        {/* Etiqueta de categoría */}
+        <span
+          className="absolute top-4 left-4 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white shadow-md"
+          style={{ backgroundColor: ORANGE, fontFamily: "'Inter', sans-serif" }}
+        >
+          {item.categoria}
+        </span>
+
+        {/* Título + contador */}
+        <div className="absolute inset-x-0 bottom-0 p-5 flex items-end justify-between gap-3">
+          <p className="text-white text-base font-semibold drop-shadow" style={{ fontFamily: "'Inter', sans-serif" }}>
+            {item.alt}
+          </p>
+          <span className="text-white/85 text-sm font-semibold flex-shrink-0" style={{ fontFamily: "'Inter', sans-serif" }}>
+            {i + 1} / {items.length}
+          </span>
+        </div>
+      </button>
+
+      {/* Flecha anterior */}
+      <button
+        onClick={() => go(-1)}
+        aria-label="Foto anterior"
+        className="absolute left-3 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-[#1A3A6B] shadow-lg hover:bg-white transition-colors active:scale-95"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6" /></svg>
+      </button>
+
+      {/* Flecha siguiente */}
+      <button
+        onClick={() => go(1)}
+        aria-label="Foto siguiente"
+        className="absolute right-3 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-[#1A3A6B] shadow-lg hover:bg-white transition-colors active:scale-95"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6" /></svg>
+      </button>
+
+      {/* Puntos indicadores */}
+      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+        {items.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => setI(idx)}
+            aria-label={`Ir a la foto ${idx + 1}`}
+            className="h-1.5 rounded-full transition-all duration-300"
+            style={{ width: idx === i ? 18 : 6, backgroundColor: idx === i ? "#fff" : "rgba(255,255,255,0.55)" }}
+          />
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 export default function GaleriaV2() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   // Sin animaciones de entrada en el teléfono (solo PC/laptop).
@@ -209,25 +326,13 @@ export default function GaleriaV2() {
                 </div>
               </motion.div>
 
-              {/* Columna vertical de fotos ("palo largo") */}
-              <div className="flex flex-col gap-4">
-                {(() => {
-                  let acumulado = 0;
-                  return g.fotos.map((photo, j) => {
-                    const idxBase = offsets[gi] + acumulado;
-                    acumulado += photo.srcs.length;
-                    return (
-                      <TarjetaFoto
-                        key={photo.srcs[0]}
-                        photo={photo}
-                        delay={j * 0.08}
-                        isMobile={isMobile}
-                        onAbrir={(sub) => setOpenIndex(idxBase + sub)}
-                      />
-                    );
-                  });
-                })()}
-              </div>
+              {/* Un solo recuadro grande con TODAS las fotos de la sucursal */}
+              <CarruselSucursal
+                fotos={g.fotos}
+                baseIndex={offsets[gi]}
+                isMobile={isMobile}
+                onAbrir={(globalIndex) => setOpenIndex(globalIndex)}
+              />
             </div>
           ))}
         </div>

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { galerias } from "@/components/v2/galeriaData";
-import { TarjetaFoto } from "@/components/v2/GaleriaV2";
+import { CarruselSucursal } from "@/components/v2/GaleriaV2";
 
 const NAVY = "#1A3A6B";
 const ORANGE = "#E8600A";
@@ -43,9 +43,6 @@ export default function FotosLocalMovil({ indice }: { indice: number }) {
     };
   }, [abierta]);
 
-  // Índice global de la primera foto de cada tarjeta, para abrir la correcta.
-  let acumulado = 0;
-
   // Sin margen propio: el gap de la grilla de la sección ya separa
   // la tarjeta del local de sus fotos.
   return (
@@ -57,21 +54,13 @@ export default function FotosLocalMovil({ indice }: { indice: number }) {
         Fotos · <span style={{ color: NAVY }}>{g.sucursal}</span>
       </p>
 
-      <div className="flex flex-col gap-4">
-        {g.fotos.map((photo) => {
-          const base = acumulado;
-          acumulado += photo.srcs.length;
-          return (
-            <TarjetaFoto
-              key={photo.srcs[0]}
-              photo={photo}
-              delay={0}
-              isMobile
-              onAbrir={(sub) => setAbierta(base + sub)}
-            />
-          );
-        })}
-      </div>
+      {/* Un solo carrusel con TODAS las fotos del local, igual que en PC. */}
+      <CarruselSucursal
+        fotos={g.fotos}
+        baseIndex={0}
+        isMobile
+        onAbrir={(local) => setAbierta(local)}
+      />
 
       {/* Visor a pantalla completa. Va en un portal al <body>: la sección
           vive dentro de un contenedor `relative z-10` (y de un motion.div

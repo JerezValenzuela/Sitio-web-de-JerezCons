@@ -26,9 +26,9 @@ export default function PreviewV2() {
       <main>
         <HeroV2 />
         <LogosMarquee />
-        <QuienesSomosV2 />
         <SucursalesV2 />
         <GaleriaV2 />
+        <QuienesSomosV2 />
         <ContactoV2 />
       </main>
       <FooterV2 />

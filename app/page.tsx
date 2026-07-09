@@ -19,8 +19,8 @@ export default function Home() {
         <HeroV2 />
         <LogosMarquee />
         <SucursalesV2 />
-        <QuienesSomosV2 />
         <GaleriaV2 />
+        <QuienesSomosV2 />
         <ContactoV2 />
       </main>
       <TiendaOnlineBadge />
