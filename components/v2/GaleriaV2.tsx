@@ -183,7 +183,8 @@ export function CarruselSucursal({
         className="relative block w-full cursor-zoom-in focus:outline-none"
         aria-label={`Ampliar foto: ${item.alt}`}
       >
-        <div className="relative h-[26rem] xl:h-[30rem] w-full">
+        {/* Móvil: formato rectangular horizontal (16:10). PC/laptop: alto fijo como antes. */}
+        <div className="relative aspect-[16/10] lg:aspect-auto lg:h-[26rem] xl:h-[30rem] w-full">
           {items.map((it, idx) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img

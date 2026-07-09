@@ -95,7 +95,7 @@ export default function HeroV2() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: isMobile ? 0 : 0.7, ease: "easeOut" }}
-          className="text-sm sm:text-base font-semibold uppercase tracking-[0.25em] mb-5"
+          className="hidden lg:block text-sm sm:text-base font-semibold uppercase tracking-[0.25em] mb-5"
           style={{ color: "#E8600A", fontFamily: "'Inter', sans-serif" }}
         >
           Ferretería JerezCons — San Antonio de Pichincha, Quito
@@ -152,11 +152,23 @@ export default function HeroV2() {
           Más de 30 años construyendo contigo
         </motion.p>
 
+        {/* Móvil: la línea "Ferretería JerezCons…" va aquí, debajo del lema
+            (el dueño la movió desde arriba del título, solo en el teléfono, jul 2026). */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: isMobile ? 0 : 0.7, delay: isMobile ? 0 : 0.65 }}
+          className="lg:hidden text-sm font-semibold uppercase tracking-[0.25em] -mt-6 mb-8"
+          style={{ color: "#E8600A", fontFamily: "'Inter', sans-serif" }}
+        >
+          Ferretería JerezCons — San Antonio de Pichincha, Quito
+        </motion.p>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: isMobile ? 0 : 0.7, delay: isMobile ? 0 : 0.75 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center"
+          className="hidden lg:flex flex-col sm:flex-row gap-4 justify-center"
         >
           <motion.button
             onClick={() => handleScroll("#sucursales")}

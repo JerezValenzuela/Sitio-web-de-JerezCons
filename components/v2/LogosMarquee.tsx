@@ -104,8 +104,16 @@ export default function LogosMarquee() {
       className="relative w-full border-y bg-white py-7 sm:py-9 overflow-hidden"
       style={{ borderColor: "rgba(26,58,107,0.10)" }}
     >
+      {/* Móvil: "Productos". PC: texto completo (el dueño pidió cambiarlo solo
+          en el teléfono, jul 2026). */}
       <p
-        className="text-center text-xs font-semibold uppercase tracking-[0.2em] mb-6"
+        className="lg:hidden text-center text-xs font-semibold uppercase tracking-[0.2em] mb-6"
+        style={{ color: ORANGE, fontFamily: "'Inter', sans-serif" }}
+      >
+        Productos
+      </p>
+      <p
+        className="hidden lg:block text-center text-xs font-semibold uppercase tracking-[0.2em] mb-6"
         style={{ color: ORANGE, fontFamily: "'Inter', sans-serif" }}
       >
         Marcas y aliados que trabajan con nosotros

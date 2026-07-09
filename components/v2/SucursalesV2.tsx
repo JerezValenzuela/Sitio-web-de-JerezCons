@@ -78,7 +78,7 @@ const sucursales: Sucursal[] = [
     // 👉 Sucursal Matriz: agrega aquí sus fotos (en /public).
     fotos: ["/hero.jpeg"],
     // Corre la foto a la derecha para que el letrero "JEREZCONS" salga completo.
-    posicionFoto: "12% center",
+    posicionFoto: "0% center",
   },
   {
     id: "norte",
@@ -86,7 +86,7 @@ const sucursales: Sucursal[] = [
     esMatriz: false,
     badge: "Sucursal · Norte",
     zona: "Rumicucho — Reino de Quito",
-    direccion: "Ruta Tanlahua y Rumihurco 2, Rumicucho, San Antonio de Pichincha",
+    direccion: "Rumicucho, San Antonio de Pichincha. Diagonal al Estadio",
     horarioLineas: [
       "Lun – Vie: 7:00 AM – 5:00 PM",
       "Sábado: 7:00 AM – 1:00 PM",
@@ -402,14 +402,14 @@ function SucursalCard({ s, delay }: { s: Sucursal; delay: number }) {
         {/* Cinta premium (arriba der). Naranja con letras blancas en TODAS
             las vistas (teléfono y PC), igual para Casa Matriz y Sucursal. */}
         <div
-          className="absolute top-4 right-4 z-20 inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full shadow-lg backdrop-blur-sm text-white bg-[#E8600A]"
+          className="absolute top-4 right-4 z-20 hidden lg:inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full shadow-lg backdrop-blur-sm text-white bg-[#E8600A]"
         >
           {matriz ? "★ Casa Matriz" : "Sucursal"}
         </div>
 
         {/* Nombre sobre la foto */}
         <div className="pointer-events-none absolute bottom-4 left-6 right-6 z-20">
-          <span className="text-xs font-semibold uppercase tracking-wider text-white/90 drop-shadow" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <span className="hidden lg:block text-xs font-semibold uppercase tracking-wider text-white/90 drop-shadow" style={{ fontFamily: "'Inter', sans-serif" }}>
             {s.badge}
           </span>
           <h3 className="text-3xl sm:text-4xl font-bold leading-tight drop-shadow-lg text-white" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
@@ -555,20 +555,15 @@ export default function SucursalesV2() {
       />
 
       <div ref={zoneRef} className="relative">
-        {/* Título simple SOLO móvil: sin pantalla extra ni efectos */}
-        <div className="lg:hidden text-center mb-10 px-4">
-          <p
-            className="text-xs font-semibold uppercase tracking-[0.3em] mb-2"
-            style={{ color: ORANGE, fontFamily: "'Inter', sans-serif" }}
+        {/* SOLO móvil: pastilla naranja "Casa Matriz" como encabezado del primer
+            local (reemplaza el título "Dónde encontrarnos / Locales", jul 2026). */}
+        <div className="lg:hidden text-center mb-8 px-4">
+          <span
+            className="inline-flex items-center gap-2 px-8 py-3 text-xl font-bold uppercase tracking-wider rounded-full shadow-lg text-white bg-[#E8600A]"
+            style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            Dónde encontrarnos
-          </p>
-          <h2
-            className="font-bold uppercase leading-none tracking-tight text-5xl sm:text-6xl"
-            style={{ color: NAVY, fontFamily: "'Barlow Condensed', sans-serif" }}
-          >
-            Locales
-          </h2>
+            ★ Casa Matriz
+          </span>
         </div>
 
         {/* Titular fijado al centro de la pantalla durante todo el showcase (solo PC) */}
@@ -607,49 +602,28 @@ export default function SucursalesV2() {
               <SucursalCard s={sucursales[0]} delay={0.05} />
             </motion.div>
 
-            {/* SOLO teléfono: fotos de la Matriz justo debajo de su tarjeta.
-                Van FUERA del motion.div porque su will-change-transform
-                rompería el visor a pantalla completa (position: fixed).
-                En PC son display:none y no ocupan celda en la grilla. */}
-            <div className="lg:hidden">
-              <FotosLocalMovil indice={0} />
-            </div>
-
-            {/* SOLO teléfono: separador GRANDE entre un local y otro. Sin él,
-                la última foto de la Matriz se confunde con la primera de
-                Rumicucho (parece que siguen las fotos del mismo local). */}
-            <div className="lg:hidden pt-10 pb-2">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="h-px flex-1" style={{ backgroundColor: "rgba(26,58,107,0.18)" }} />
-                <span
-                  className="flex h-10 w-10 items-center justify-center rounded-full flex-shrink-0"
-                  style={{ backgroundColor: NAVY, color: ORANGE }}
-                >
-                  <Pin />
-                </span>
-                <span className="h-px flex-1" style={{ backgroundColor: "rgba(26,58,107,0.18)" }} />
-              </div>
-              <p
-                className="text-center text-xs font-semibold uppercase tracking-[0.3em]"
-                style={{ color: ORANGE, fontFamily: "'Inter', sans-serif" }}
-              >
-                Segundo local
-              </p>
-              <h3
-                className="text-center font-bold uppercase leading-none tracking-tight text-5xl sm:text-6xl"
-                style={{ color: NAVY, fontFamily: "'Barlow Condensed', sans-serif" }}
+            {/* SOLO móvil: pastilla naranja "Rumicucho" como encabezado del
+                segundo local (reemplaza "Segundo local / Rumicucho", jul 2026). */}
+            <div className="lg:hidden text-center pt-6 pb-1">
+              <span
+                className="inline-flex items-center gap-2 px-8 py-3 text-xl font-bold uppercase tracking-wider rounded-full shadow-lg text-white bg-[#E8600A]"
+                style={{ fontFamily: "'Inter', sans-serif" }}
               >
                 Rumicucho
-              </h3>
+              </span>
             </div>
 
             <motion.div style={isMobile ? { x: 0, opacity: 1 } : { x: rightX, opacity: cardsOpacity }} className="h-full will-change-transform">
               <SucursalCard s={sucursales[1]} delay={0.18} />
             </motion.div>
 
-            {/* SOLO teléfono: fotos de Rumicucho justo debajo de su tarjeta */}
+            {/* SOLO teléfono: TODAS las fotos de los dos locales JUNTAS en una
+                sola galería (el dueño pidió unirlas, jul 2026).
+                Va FUERA de los motion.div porque su will-change-transform
+                rompería el visor a pantalla completa (position: fixed).
+                En PC es display:none y no ocupa celda en la grilla. */}
             <div className="lg:hidden">
-              <FotosLocalMovil indice={1} />
+              <FotosLocalMovil indices={[0, 1]} />
             </div>
           </div>
 

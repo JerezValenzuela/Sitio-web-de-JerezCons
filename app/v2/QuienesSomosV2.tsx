@@ -40,7 +40,8 @@ export default function QuienesSomosV2() {
                 Nos dedicamos a la <strong>venta y distribución de materiales de construcción</strong>, comprometidos con brindar productos de la más alta calidad a constructores, arquitectos y familias de Quito.
               </p>
             </div>
-            <div className="mt-8">
+            {/* "Conócenos más" oculto en móvil (el dueño lo quitó, jul 2026). */}
+            <div className="mt-8 hidden lg:block">
               <a
                 href="https://wa.me/593984067799"
                 target="_blank"
@@ -61,7 +62,7 @@ export default function QuienesSomosV2() {
             initial={{ opacity: 0, x: 50 }}
             animate={isInView || isMobile ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: isMobile ? 0 : 0.7, delay: isMobile ? 0 : 0.2, ease: "easeOut" }}
-            className="relative"
+            className="relative hidden lg:block"
           >
             <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-[4/3]">
               {/* eslint-disable-next-line @next/next/no-img-element */}

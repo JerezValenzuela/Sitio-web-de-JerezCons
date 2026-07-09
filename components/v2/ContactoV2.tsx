@@ -72,7 +72,7 @@ export default function ContactoV2() {
   return (
     <section
       id="contacto"
-      className="relative py-24 lg:py-32 overflow-hidden"
+      className="hidden lg:block relative py-24 lg:py-32 overflow-hidden"
       style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #F4F6FA 60%, #EEF1F6 100%)" }}
     >
       {/* Textura blueprint navy muy tenue (guiño a construcción), con desvanecido radial */}
@@ -111,7 +111,7 @@ export default function ContactoV2() {
               Hablemos · Atención inmediata
             </span>
 
-            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-[0.95]" style={{ color: NAVY, fontFamily: "'Barlow Condensed', sans-serif" }}>
+            <h2 className="hidden lg:block text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-[0.95]" style={{ color: NAVY, fontFamily: "'Barlow Condensed', sans-serif" }}>
               ¿Listo para tu<br />
               <span style={{ color: ORANGE }}>próximo proyecto?</span>
             </h2>
@@ -119,7 +119,7 @@ export default function ContactoV2() {
               Cuéntanos qué necesitas y te asesoramos al instante. Materiales, herramientas y precios — todo en un solo lugar.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-9">
+            <div className="hidden lg:flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-9">
               <motion.a
                 href="https://wa.me/593984067799"
                 target="_blank"
@@ -168,7 +168,7 @@ export default function ContactoV2() {
             initial={{ opacity: 0, y: 40 }}
             animate={isInView || isMobile ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: isMobile ? 0 : 0.7, delay: isMobile ? 0 : 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="relative rounded-3xl bg-white p-7 sm:p-9 ring-1 ring-black/5"
+            className="hidden lg:block relative rounded-3xl bg-white p-7 sm:p-9 ring-1 ring-black/5"
             style={{ boxShadow: "0 30px 70px -25px rgba(26,58,107,0.35), 0 8px 24px -12px rgba(26,58,107,0.18)" }}
           >
             {/* Acento naranja superior */}

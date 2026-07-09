@@ -161,7 +161,9 @@ export default function FooterV2() {
 
       {/* Cuerpo del footer */}
       <div className="relative max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
+        {/* Cuerpo de 4 columnas: oculto en móvil. El dueño pidió dejar solo la
+            tarjeta CTA de arriba y el pie con © 2026 (jul 2026). */}
+        <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
           {/* Brand */}
           <div className="lg:col-span-4">
             <button onClick={handleLogoClick} className="font-bold text-3xl mb-4 focus:outline-none" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
@@ -278,7 +280,7 @@ export default function FooterV2() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-0 lg:mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-white/50 text-xs" style={{ fontFamily: "'Inter', sans-serif" }}>
             © 2026 JerezCons. Todos los derechos reservados.
           </p>

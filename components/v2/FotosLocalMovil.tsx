@@ -14,13 +14,17 @@ const ORANGE = "#E8600A";
  * tarjeta en "Dónde encontrarnos" (el contenedor padre lleva lg:hidden).
  * En PC/laptop la galería sigue siendo la sección GaleriaV2.
  *
- * `indice`: posición del local en `galerias` (0 = Matriz Pucará,
- * 1 = Sucursal Rumicucho). Al tocar una foto se abre a pantalla completa
- * con flechas para pasar entre las fotos de ESE local.
+ * `indices`: posiciones de los locales en `galerias` que se muestran JUNTOS
+ * en una sola galería (0 = Matriz Pucará, 1 = Sucursal Rumicucho). También
+ * acepta `indice` (un solo local) por compatibilidad. Al tocar una foto se
+ * abre a pantalla completa con flechas para pasar entre TODAS las fotos.
  */
-export default function FotosLocalMovil({ indice }: { indice: number }) {
-  const g = galerias[indice];
-  const fotos = g.fotos.flatMap((f) => f.srcs.map((src) => ({ src, alt: f.alt })));
+export default function FotosLocalMovil({ indice, indices }: { indice?: number; indices?: number[] }) {
+  const idxs = indices ?? (indice !== undefined ? [indice] : [0]);
+  const gs = idxs.map((i) => galerias[i]);
+  // Todas las fotos de los locales seleccionados, en un solo array navegable.
+  const fotosCarrusel = gs.flatMap((g) => g.fotos);
+  const fotos = fotosCarrusel.flatMap((f) => f.srcs.map((src) => ({ src, alt: f.alt })));
   const [abierta, setAbierta] = useState<number | null>(null);
 
   const cerrar = useCallback(() => setAbierta(null), []);
@@ -51,12 +55,12 @@ export default function FotosLocalMovil({ indice }: { indice: number }) {
         className="mb-3 text-xs font-semibold uppercase tracking-[0.2em]"
         style={{ color: ORANGE, fontFamily: "'Inter', sans-serif" }}
       >
-        Fotos · <span style={{ color: NAVY }}>{g.sucursal}</span>
+        Fotos · <span style={{ color: NAVY }}>Nuestros locales</span>
       </p>
 
-      {/* Un solo carrusel con TODAS las fotos del local, igual que en PC. */}
+      {/* Un solo carrusel con TODAS las fotos de los locales juntas. */}
       <CarruselSucursal
-        fotos={g.fotos}
+        fotos={fotosCarrusel}
         baseIndex={0}
         isMobile
         onAbrir={(local) => setAbierta(local)}
